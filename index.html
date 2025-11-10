@@ -1179,16 +1179,13 @@
         function showView(viewId) { 
             tg.HapticFeedback.impactOccurred('light'); 
             
-            // Hide all views, then show the active one
             views.forEach(v => v.classList.remove('active')); 
             document.getElementById(viewId).classList.add('active'); 
             
-            // Remove 'active' from all bottom nav items and header buttons
             bottomNavItems.forEach(n => n.classList.remove('active')); 
             headerNotifBtn.classList.remove('active-header-nav');
             headerProfileBtn.classList.remove('active-header-nav');
 
-            // Set active class for the current view
             const currentBottomNavItem = document.getElementById(`nav${viewId.replace('View', '')}`);
             if (currentBottomNavItem) {
                 currentBottomNavItem.classList.add('active'); 
@@ -1204,6 +1201,7 @@
                 fetchInitialData(); 
             } else if (viewId === 'gamesView') {
                 fetchAvailableRooms();
+                // Ensure active game section is shown/hidden correctly
                 if (activeGameRoomId) {
                     document.getElementById('myActiveGameSection').style.display = 'block';
                     document.getElementById('gamePlayArea').style.display = 'block'; 
