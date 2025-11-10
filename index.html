@@ -317,6 +317,7 @@
             box-sizing: border-box;
             box-shadow: 5px 5px 0px 0px rgba(0,0,0,0.3); 
             animation: fadeIn 0.3s forwards;
+            position: relative; /* For close button positioning */
         }
         .modal-content h2 {
             margin-top: 0;
@@ -415,6 +416,9 @@
             font-size: 12px;
             color: rgba(255, 255, 255, 0.6);
             margin-top: 5px;
+        }
+        .notification-item.unread {
+            border-left: 5px solid var(--accent-yellow); /* Highlight unread notifications */
         }
         
         /* Daily Bonus Card Specifics */
@@ -588,6 +592,7 @@
             border: 3px solid var(--pixel-border-dark);
             border-right-color: var(--pixel-border-light);
             border-bottom-color: var(--pixel-border-light);
+            box-shadow: 1px 1px 0px 0px rgba(0,0,0,0.1); 
         }
         .game-room-item .game-info {
             flex-grow: 1;
@@ -615,39 +620,51 @@
             border: 3px solid var(--pixel-border-dark);
             border-right-color: var(--pixel-border-light);
             border-bottom-color: var(--pixel-border-light);
+            box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.1);
         }
         .game-players {
             display: flex;
             justify-content: space-around;
-            align-items: center;
+            align-items: flex-start; /* Align names at top, moves can vary */
             margin-bottom: 15px;
             font-size: 22px;
+            position: relative;
         }
         .game-player-display {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 5px;
+            min-width: 120px; /* Ensure consistent width */
+            padding: 5px;
         }
         .game-player-display.active-player {
-            text-shadow: 0 0 5px var(--game-waiting-color); /* Highlight active player */
+            filter: drop-shadow(0 0 3px var(--game-waiting-color)); /* Highlight active player */
+            border: 1px dashed var(--game-waiting-color); /* Subtle dashed border */
         }
         .game-player-display .player-name {
             color: var(--game-player-color);
             text-shadow: 1px 1px 0px var(--pixel-border-dark);
+            font-size: 18px;
         }
         .game-player-display .opponent-name {
             color: var(--game-opponent-color);
             text-shadow: 1px 1px 0px var(--pixel-border-dark);
+            font-size: 18px;
         }
         .game-player-display .move-emoji {
             font-size: 48px;
             min-height: 48px; /* Maintain height even if no move */
+            margin: 5px 0;
         }
         .game-players .vs-text {
             font-size: 18px;
             color: var(--tg-hint);
             margin: 0 10px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .game-stats {
@@ -662,6 +679,7 @@
         .game-score {
             color: var(--accent-yellow);
             font-size: 28px;
+            margin: 0 5px;
         }
 
         .game-result-message {
@@ -669,7 +687,8 @@
             font-size: 24px;
             color: var(--accent-yellow);
             text-shadow: 2px 2px 0px var(--pixel-border-dark);
-            min-height: 24px; /* Ensure space for message */
+            min-height: 24px; 
+            margin-bottom: 15px;
         }
 
         .game-play-area .move-buttons {
@@ -814,18 +833,18 @@
 
         <div class="pixel-container" id="myActiveGameSection" style="display:none;">
             <h3>My Active Game: <span id="activeGameRoomName"></span></h3>
-            <p id="activeGameStatus" style="font-size: 16px; color: var(--game-waiting-color); margin-bottom: 10px;">Waiting for opponent...</p>
+            <p id="activeGameStatus" style="font-size: 16px; color: var(--game-waiting-color); margin-bottom: 10px;"></p>
             
             <div id="gamePlayArea" style="display:none;">
                 <div class="game-players">
                     <div class="game-player-display" id="player1Display">
-                        <span class="player-name">You (<span id="player1Name"></span>)</span>
+                        <span class="player-name" id="player1Name"></span>
                         <div class="move-emoji" id="player1Move"></div>
                         <span class="player-score-text">Score: <span id="player1Score">0</span></span>
                     </div>
                     <span class="vs-text">VS</span>
                     <div class="game-player-display" id="player2Display">
-                        <span class="opponent-name" id="player2Name">Opponent</span>
+                        <span class="opponent-name" id="player2Name"></span>
                         <div class="move-emoji" id="player2Move"></div>
                         <span class="opponent-score-text">Score: <span id="player2Score">0</span></span>
                     </div>
@@ -833,7 +852,7 @@
                 
                 <div class="game-result-message" id="gameResultMessage"></div>
 
-                <p id="yourTurnStatus" style="margin-top: 20px; font-size: 18px; color: var(--accent-yellow);">Make your move!</p>
+                <p id="yourTurnStatus" style="margin-top: 20px; font-size: 18px; color: var(--accent-yellow);"></p>
                 <div class="move-buttons">
                     <button type="button" data-move="rock">✊</button>
                     <button type="button" data-move="paper">✋</button>
@@ -895,6 +914,7 @@
     <!-- Task Submission Modal -->
     <div id="taskModal" class="modal-overlay">
         <div class="modal-content">
+            <button type="button" class="close-button" onclick="closeTaskSubmissionModal()">✖</button>
             <h2 id="taskModalTitle" style="font-size: 20px;">Submit Proof</h2>
             <form id="taskProofForm">
                 <div class="form-group"><label for="taskProofText">Note (Optional)</label><textarea id="taskProofText" rows="2"></textarea></div>
@@ -924,6 +944,7 @@
                 <li>The winner takes the entire pot (double the bet amount).</li>
                 <li>If a player leaves the game early, their bet is refunded, and the game is cancelled for both players.</li>
             </ul>
+            <button type="button" class="button" style="margin-top: 20px;" onclick="closeGameRulesModal()">Got It!</button>
         </div>
     </div>
 
@@ -953,6 +974,8 @@
         document.documentElement.style.setProperty('--tg-secondary-bg', tg.themeParams.secondary_bg_color || '#303030');
 
         // --- Configuration (UPDATE THESE!) ---
+        // Normalize API_BASE_URL to ensure no trailing slash.
+        // IMPORTANT: Replace with your Railway backend URL!
         const rawApiBaseUrl = "https://web-production-078c8.up.railway.app"; 
         const API_BASE_URL = rawApiBaseUrl.endsWith('/') ? rawApiBaseUrl.slice(0, -1) : rawApiBaseUrl; 
         
@@ -992,14 +1015,12 @@
                 document.querySelector('.header-icon-button:nth-child(2)').classList.add('active-header-nav');
             }
 
-            // Trigger data fetching/rendering for specific views
             if (viewId === 'notificationsView') {
                 fetchNotifications();
             } else if (viewId === 'homeView' || viewId === 'profileView') {
                 fetchInitialData(); 
             } else if (viewId === 'gamesView') {
                 fetchAvailableRooms();
-                // If user is in an active game, show their game section
                 if (activeGameRoomId) {
                     document.getElementById('myActiveGameSection').style.display = 'block';
                     document.getElementById('gamePlayArea').style.display = 'block'; 
@@ -1033,8 +1054,13 @@
         function closeGameRulesModal() {
             document.getElementById('gameRulesModal').style.display = 'none';
         }
+
+        function closeTaskSubmissionModal() {
+            document.getElementById('taskModal').style.display = 'none';
+            document.getElementById('taskProofForm').reset();
+        }
         
-        // --- API Calls ---
+        // --- API Calls Helper ---
         async function callApi(endpoint, method = 'POST', body = {}) {
             document.getElementById('loading').style.display = 'flex';
             try {
@@ -1044,6 +1070,7 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ user_id: user.id, _auth: initData, ...body })
                 };
+                console.log(`API Call: ${method} ${url} with body:`, options.body); // For debugging
                 const response = await fetch(url, options);
                 const data = await response.json();
                 if (!response.ok) {
@@ -1053,7 +1080,7 @@
             } catch (error) {
                 console.error(`API Call to ${endpoint} error:`, error);
                 tg.showAlert(error.message || `An error occurred while calling ${endpoint}.`);
-                throw error; // Re-throw to be caught by specific handler
+                throw error; 
             } finally {
                 document.getElementById('loading').style.display = 'none';
             }
@@ -1062,6 +1089,7 @@
         async function fetchInitialData() {
             try {
                 appData = await callApi('/get_initial_data', 'POST', {});
+                activeGameRoomId = appData.active_game_room_id; // Update active game status
                 renderAll(); 
             } catch (error) { 
                 tg.showAlert(error.message || 'COULD NOT LOAD DATA. PLEASE RESTART.'); 
@@ -1073,7 +1101,6 @@
                 const notifications = await callApi('/get_notifications', 'POST', {});
                 renderNotifications(notifications);
                 
-                // Update notification badge
                 const unreadCount = notifications.filter(n => !n.is_read).length; 
                 const notificationBadge = document.getElementById('unreadNotifications');
                 if (unreadCount > 0) {
@@ -1128,9 +1155,9 @@
                 document.getElementById('gamePlayArea').style.display = 'none'; 
                 startGamePolling(activeGameRoomId);
                 fetchInitialData(); 
-                fetchAvailableRooms(); // Refresh room list for others
+                fetchAvailableRooms(); 
             } catch (error) {
-                // Error handled by callApi
+                console.error("Create room error:", error);
             }
         }
 
@@ -1139,7 +1166,7 @@
                 const rooms = await callApi('/games/list_rooms', 'POST', {});
                 renderAvailableRooms(rooms);
             } catch (error) {
-                // Error handled by callApi, no need to show another alert for passive refresh
+                console.error("Fetch available rooms error:", error);
             }
         }
 
@@ -1147,14 +1174,14 @@
             const availableRoomsList = document.getElementById('availableRoomsList');
             availableRoomsList.innerHTML = '';
 
-            if (!rooms || rooms.length === 0) {
+            const roomsToShow = rooms.filter(room => room.creator_id !== user.id);
+
+            if (!roomsToShow || roomsToShow.length === 0) {
                 availableRoomsList.innerHTML = '<li class="pixel-container"><p>No rooms available. Create one!</p></li>';
                 return;
             }
 
-            rooms.forEach(room => {
-                if (room.creator_id === user.id) return; 
-
+            roomsToShow.forEach(room => {
                 const li = document.createElement('li');
                 li.className = 'list-item game-room-item';
                 li.innerHTML = `
@@ -1189,13 +1216,13 @@
                 fetchInitialData(); 
                 fetchAvailableRooms(); 
             } catch (error) {
-                // Error handled by callApi
+                console.error("Join room error:", error);
             }
         }
 
         async function makeGameMove(move) {
             if (!activeGameRoomId) {
-                tg.showAlert('You are not in an an active game.');
+                tg.showAlert('You are not in an active game.');
                 return;
             }
             // Disable buttons temporarily to prevent double click
@@ -1207,10 +1234,9 @@
                 showToast(`You chose ${move.toUpperCase()}!`);
                 updateGameUI(result); 
             } catch (error) {
-                // Error handled by callApi, re-enable buttons on error
-                document.querySelectorAll('#gamePlayArea .move-buttons button').forEach(btn => btn.disabled = false);
-            } finally {
-                // Buttons will be re-enabled by updateGameUI if it's player's turn, or stay disabled if waiting/game over
+                // Error handled by callApi, re-enable buttons on error or on next poll
+                document.querySelectorAll('#gamePlayArea .move-buttons button').forEach(btn => btn.disabled = false); // Re-enable on error for user to retry
+                console.error("Make move error:", error);
             }
         }
 
@@ -1231,7 +1257,7 @@
                         fetchAvailableRooms(); 
                         fetchInitialData(); 
                     } catch (error) {
-                        // Error handled by callApi
+                        console.error("Leave game error:", error);
                     }
                 }
             });
@@ -1247,7 +1273,7 @@
                 updateGameUI(gameData);
             } catch (error) {
                 // If game state is not found or ended, clear activeGameRoomId
-                if (error.message && (error.message.includes("Game ended") || error.message.includes("not found"))) {
+                if (error.message && (error.message.includes("Game ended") || error.message.includes("not found") || error.message.includes("cancelled"))) {
                     activeGameRoomId = null;
                     stopGamePolling();
                     document.getElementById('myActiveGameSection').style.display = 'none';
@@ -1263,7 +1289,8 @@
         const MOVE_EMOJIS = {
             'rock': '✊',
             'paper': '✋',
-            'scissors': '✌️'
+            'scissors': '✌️',
+            'none': '' // For when no move has been made yet
         };
 
         function updateGameUI(gameData) {
@@ -1281,63 +1308,72 @@
             const yourTurnStatus = document.getElementById('yourTurnStatus');
             const moveButtons = document.querySelectorAll('#gamePlayArea .move-buttons button');
 
-            // Determine who is player1 (the current user) and player2 (the opponent)
             const isCreator = (gameData.creator_id === user.id);
-            const currentPlayerName = user.first_name || 'You';
-            const opponentName = gameData.opponent_name || 'Opponent';
-
-            player1NameElement.innerText = currentPlayerName;
-            player2NameElement.innerText = opponentName;
+            
+            // Assign player names correctly based on who is the current user
+            player1NameElement.innerText = user.first_name || 'You';
+            player2NameElement.innerText = gameData.opponent_name || 'Opponent';
 
             player1ScoreElement.innerText = isCreator ? gameData.creator_score : gameData.opponent_score;
             player2ScoreElement.innerText = isCreator ? gameData.opponent_score : gameData.creator_score;
+
+            // Display current moves (if any)
+            const currentPlayerLastMove = isCreator ? gameData.creator_last_move : gameData.opponent_last_move;
+            const opponentPlayerLastMove = isCreator ? gameData.opponent_last_move : gameData.creator_last_move;
+            
+            player1MoveElement.innerText = MOVE_EMOJIS[currentPlayerLastMove] || '';
+            player2MoveElement.innerText = MOVE_EMOJIS[opponentPlayerLastMove] || '';
+
 
             if (gameData.status === 'waiting_for_opponent') {
                 statusElement.innerText = `Room: ${gameData.room_name} - Waiting for opponent... (Bet: P${gameData.bet_amount.toFixed(2)})`;
                 gamePlayArea.style.display = 'none';
                 yourTurnStatus.innerText = "Waiting for an opponent to join...";
                 moveButtons.forEach(btn => btn.disabled = true);
+                player1Display.classList.remove('active-player');
+                player2Display.classList.remove('active-player');
             } else if (gameData.status === 'in_progress') {
                 statusElement.innerText = `Room: ${gameData.room_name} - Game in progress! (Bet: P${gameData.bet_amount.toFixed(2)})`;
                 gamePlayArea.style.display = 'block';
 
-                // Display moves from last round if available
-                player1MoveElement.innerText = gameData.player_last_move ? MOVE_EMOJIS[gameData.player_last_move] : '';
-                player2MoveElement.innerText = gameData.opponent_last_move ? MOVE_EMOJIS[gameData.opponent_last_move] : '';
-
-                // Determine whose turn it is to make a move
-                const playerMoved = isCreator ? gameData.creator_move_made : gameData.opponent_move_made;
-                const opponentMoved = isCreator ? gameData.opponent_move_made : gameData.creator_move_made;
+                const playerMoved = gameData.player_move_made;
+                const opponentMoved = gameData.opponent_move_made;
                 
-                if (!playerMoved) { // It's my turn
+                if (!playerMoved) { 
                     yourTurnStatus.innerText = "Make your move!";
                     moveButtons.forEach(btn => btn.disabled = false);
                     player1Display.classList.add('active-player');
                     player2Display.classList.remove('active-player');
-                } else if (playerMoved && !opponentMoved) { // I've moved, waiting for opponent
+                } else if (playerMoved && !opponentMoved) { 
                     yourTurnStatus.innerText = "Waiting for opponent's move...";
                     moveButtons.forEach(btn => btn.disabled = true);
                     player1Display.classList.remove('active-player');
                     player2Display.classList.add('active-player');
-                } else { // Both moved, waiting for new round state or results
+                } else { 
+                    // Both players have moved, round is resolved, waiting for next round (moves reset to None)
                     yourTurnStatus.innerText = gameData.last_round_result || "Waiting for next round...";
-                    moveButtons.forEach(btn => btn.disabled = true);
+                    moveButtons.forEach(btn => btn.disabled = true); // Wait for next round to enable
                     player1Display.classList.remove('active-player');
                     player2Display.classList.remove('active-player');
+                    // Reset moves display after round is complete and result shown
+                    player1MoveElement.innerText = '';
+                    player2MoveElement.innerText = '';
                 }
 
                 gameResultMessageElement.innerText = gameData.last_round_result || "";
 
             } else if (gameData.status === 'finished' || gameData.status === 'cancelled') {
                 statusElement.innerText = `Game Over!`;
-                gamePlayArea.style.display = 'block'; // Keep showing scores
-                player1MoveElement.innerText = gameData.player_last_move ? MOVE_EMOJIS[gameData.player_last_move] : '';
-                player2MoveElement.innerText = gameData.opponent_last_move ? MOVE_EMOJIS[gameData.opponent_last_move] : '';
+                gamePlayArea.style.display = 'block'; 
+                
+                player1MoveElement.innerText = MOVE_EMOJIS[currentPlayerLastMove] || '';
+                player2MoveElement.innerText = MOVE_EMOJIS[opponentPlayerLastMove] || '';
+                
                 player1ScoreElement.innerText = isCreator ? gameData.creator_score : gameData.opponent_score;
                 player2ScoreElement.innerText = isCreator ? gameData.opponent_score : gameData.creator_score;
                 gameResultMessageElement.innerText = gameData.final_result_message;
-                yourTurnStatus.innerText = ""; // Clear turn status
-                moveButtons.forEach(btn => btn.disabled = true); // Disable buttons
+                yourTurnStatus.innerText = ""; 
+                moveButtons.forEach(btn => btn.disabled = true); 
                 player1Display.classList.remove('active-player');
                 player2Display.classList.remove('active-player');
 
@@ -1407,14 +1443,12 @@
         }
 
         document.getElementById('cancelSubmitBtn').addEventListener('click', () => { 
-            taskModal.style.display = 'none'; 
-            document.getElementById('taskProofForm').reset(); 
+            closeTaskSubmissionModal();
         });
 
         taskModal.addEventListener('click', (e) => { 
             if (e.target === taskModal) {
-                taskModal.style.display = 'none'; 
-                document.getElementById('taskProofForm').reset(); 
+                closeTaskSubmissionModal();
             }
         });
 
@@ -1435,8 +1469,7 @@
                 try { 
                     await callApi('/submit_task_proof', 'POST', { task_id: currentTaskId, text, photo: reader.result });
                     tg.showAlert('Proof submitted for review!'); 
-                    taskModal.style.display = 'none'; 
-                    document.getElementById('taskProofForm').reset(); 
+                    closeTaskSubmissionModal(); 
                     fetchInitialData(); 
                 } catch (error) { 
                     console.error("Task submission error:", error);
@@ -1583,7 +1616,6 @@
             } 
         });
 
-        // Game specific event listeners
         document.getElementById('createGameRoomForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             createGameRoom();
@@ -1598,7 +1630,6 @@
             });
         });
 
-        // Event listener for "Mark All As Read" button
         document.getElementById('markAllReadBtn').addEventListener('click', markAllNotificationsAsRead);
 
     </script>
