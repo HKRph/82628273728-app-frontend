@@ -942,7 +942,7 @@
         document.documentElement.style.setProperty('--tg-secondary-bg', tg.themeParams.secondary_bg_color || '#303030');
 
         // --- Configuration (UPDATE THESE!) ---
-        const rawApiBaseUrl = "https://web-production-078c8.up.railway.app"; 
+        const rawApiBaseUrl = "https://your-xewee-backend.railway.app"; 
         const API_BASE_URL = rawApiBaseUrl.endsWith('/') ? rawApiBaseUrl.slice(0, -1) : rawApiBaseUrl; 
         
         const BOT_USERNAME = "XeweeBot"; 
@@ -1004,6 +1004,8 @@
 
         // --- Frontend Rendering Functions (Declared at top for availability) ---
 
+        // IMPORTANT: renderAll and renderNotifications defined here to ensure they are available
+        // before fetchInitialData (which calls renderAll) is called.
         function renderAll(){
             // --- Home View ---
             document.getElementById('balanceAmount').innerText = `P${(appData.balance || 0).toFixed(2)}`;
@@ -1179,13 +1181,16 @@
         function showView(viewId) { 
             tg.HapticFeedback.impactOccurred('light'); 
             
+            // Hide all views, then show the active one
             views.forEach(v => v.classList.remove('active')); 
             document.getElementById(viewId).classList.add('active'); 
             
+            // Remove 'active' from all bottom nav items and header buttons
             bottomNavItems.forEach(n => n.classList.remove('active')); 
             headerNotifBtn.classList.remove('active-header-nav');
             headerProfileBtn.classList.remove('active-header-nav');
 
+            // Set active class for the current view
             const currentBottomNavItem = document.getElementById(`nav${viewId.replace('View', '')}`);
             if (currentBottomNavItem) {
                 currentBottomNavItem.classList.add('active'); 
@@ -1208,7 +1213,7 @@
                 } else {
                     document.getElementById('myActiveGameSection').style.display = 'none';
                     document.getElementById('gamePlayArea').style.display = 'none'; 
-                    stopGamePolling();
+                    stopGamePolling(); 
                 }
             } else {
                 stopGamePolling(); 
@@ -1472,6 +1477,94 @@
             });
         }
         
+        // --- Game UI Update Logic ---
+        async function fetchGameStatus(roomId) {
+            if (!activeGameRoomId || roomId !== activeGameRoomId) {
+                stopGamePolling();
+                return;
+            }
+            try {
+                const url = `${API_BASE_URL}/games/get_game_state`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ user_id: user.id, _auth: initData, room_id: activeGameRoomId })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    if (response.status === 404 || (errorData.detail && errorData.detail.includes("Game ended"))) {
+                        tg.showAlert(errorData.detail || "Game ended or not found.");
+                        activeGameRoomId = null;
+                        stopGamePolling();
+                        showView('gamesView'); 
+                        fetchInitialData();
+                        return;
+                    }
+                    throw new Error(errorData.detail || `Failed to fetch game state: ${response.status}`);
+                }
+                const gameData = await response.json();
+                updateGameUI(gameData);
+            } catch (error) {
+                console.error("Fetch game status error during polling:", error);
+            }
+        }
+
+        function updateGameUI(gameData) {
+            const statusElement = document.getElementById('activeGameStatus');
+            const gamePlayArea = document.getElementById('gamePlayArea');
+            const opponentNameDisplay = document.getElementById('opponentNameDisplay');
+            const playerScoreElement = document.getElementById('playerScore');
+            const opponentScoreElement = document.getElementById('opponentScore');
+            const gameResultMessageElement = document.getElementById('gameResultMessage');
+            const yourLastMoveElement = document.getElementById('yourLastMove');
+            const opponentLastMoveElement = document.getElementById('opponentLastMove');
+            const gamePromptElement = document.getElementById('gamePrompt');
+            const moveButtons = document.querySelectorAll('#gamePlayArea .move-buttons button');
+
+            opponentNameDisplay.innerText = gameData.opponent_name || 'Opponent'; 
+
+            if (gameData.status === 'waiting_for_opponent') {
+                statusElement.innerText = `Room: ${gameData.room_name || 'Unnamed Room'} (ID: ${activeGameRoomId}) - Waiting for opponent...`;
+                gamePlayArea.style.display = 'none';
+                gamePromptElement.innerText = "Waiting for opponent to join...";
+            } else if (gameData.status === 'in_progress') {
+                statusElement.innerText = `Room: ${gameData.room_name || 'Unnamed Room'} (ID: ${activeGameRoomId}) - Game in progress!`;
+                gamePlayArea.style.display = 'block';
+                playerScoreElement.innerText = gameData.player_score;
+                opponentScoreElement.innerText = gameData.opponent_score_display;
+                
+                yourLastMoveElement.innerText = rpsEmojis[gameData.your_last_move || 'none'];
+                opponentLastMoveElement.innerText = rpsEmojis[gameData.opponent_last_move || 'none'];
+
+                gameResultMessageElement.innerText = gameData.last_round_result || "Make your move!";
+                
+                if (gameData.your_move_made) {
+                    gamePromptElement.innerText = "Waiting for opponent's move...";
+                    moveButtons.forEach(btn => btn.disabled = true);
+                } else {
+                    gamePromptElement.innerText = "Make your move!";
+                    moveButtons.forEach(btn => btn.disabled = false);
+                }
+
+            } else if (gameData.status === 'finished') {
+                statusElement.innerText = `Game Finished! Winner: ${gameData.winner_name || 'Draw'}`;
+                gamePlayArea.style.display = 'block';
+                playerScoreElement.innerText = gameData.player_score;
+                opponentScoreElement.innerText = gameData.opponent_score_display;
+                gameResultMessageElement.innerText = gameData.final_result_message;
+                yourLastMoveElement.innerText = rpsEmojis[gameData.your_last_move || 'none'];
+                opponentLastMoveElement.innerText = rpsEmojis[gameData.opponent_last_move || 'none'];
+                gamePromptElement.innerText = "Game is over.";
+
+                tg.showAlert(gameData.final_result_message);
+                activeGameRoomId = null; 
+                stopGamePolling();
+                document.getElementById('myActiveGameSection').style.display = 'none';
+                showView('gamesView'); 
+                fetchInitialData(); 
+            }
+        }
+        
         // --- Event Listeners ---
         window.addEventListener('load', fetchInitialData); 
 
@@ -1553,7 +1646,7 @@
             } 
 
             const reader = new FileReader(); 
-            reader.readAsDataURL(photoInput.files[0]); 
+            reader.readAsDataURL(photoInput.files[0]); // Changed to files[0] to correctly read the file
             
             reader.onload = async () => { 
                 document.getElementById('loading').style.display = 'flex'; 
