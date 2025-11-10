@@ -33,15 +33,9 @@
             --pixel-input-text: #000000; /* Dark text for the special input */
             --notification-success-bg: #004d40; /* Dark green for approved notifications */
             --notification-danger-bg: #b71c1c; /* Dark red for rejected notifications */
-            --notification-info-bg: #1a237e; /* Dark blue for general info (e.g., invites, gifts) */
             --notification-text-color: #ffffff; /* White text for notifications */
             --notification-badge-bg: #ff0000; /* Red badge for unread notifications */
             --notification-badge-text: #ffffff;
-            
-            /* Game Specific Colors */
-            --game-player-color: var(--accent-green);
-            --game-opponent-color: var(--accent-red);
-            --game-waiting-color: var(--accent-yellow);
         }
         
         /* Keyframe Animations */
@@ -50,7 +44,7 @@
         @keyframes toastOut { to { opacity: 0; bottom: 60px; } }
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
         @keyframes spin {
@@ -93,33 +87,27 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
-            padding: 5px 0; 
-            border-bottom: 2px solid var(--pixel-border-light); /* Separator */
-            margin-left: -10px; /* Adjust for body padding */
-            margin-right: -10px; /* Adjust for body padding */
-            padding-left: 10px;
-            padding-right: 10px;
+            padding: 5px 0; /* Add some padding to header area */
         }
         .header .app-title-tagline {
             flex-grow: 1;
-            display: flex;
-            flex-direction: column;
         }
         .header .app-title-tagline h1 { 
             font-size: 28px; 
             margin: 0; 
-            margin-bottom: 2px; /* Reduced space below title */
-            color: var(--tg-text);
+            margin-bottom: 5px; /* Space below title */
+            color: var(--accent-yellow); /* Title color */
+            text-shadow: 2px 2px 0px var(--pixel-border-dark); /* Pixel art text shadow */
         } 
         .header .app-title-tagline p { 
-            font-size: 16px; /* Slightly smaller for tagline */
+            font-size: 18px; 
             color: var(--tg-hint); 
             margin: 0; 
         }
 
         .header .top-right-nav {
             display: flex;
-            gap: 15px; 
+            gap: 15px; /* Spacing between icons */
             align-items: center;
         }
         .header-icon-button {
@@ -127,25 +115,23 @@
             border: none;
             color: var(--tg-text);
             font-family: 'VT323', monospace; 
-            font-size: 24px; 
+            font-size: 24px; /* Icon size */
             cursor: pointer;
-            padding: 5px; 
-            position: relative; 
-            filter: drop-shadow(0 0 2px var(--tg-text)); 
+            padding: 5px; /* Padding around the icon itself */
+            position: relative; /* For badge positioning */
+            filter: drop-shadow(0 0 2px var(--tg-text)); /* Subtle glow */
             transition: all 0.1s ease-in-out;
         }
-        .header-icon-button:hover {
-            filter: drop-shadow(0 0 5px var(--tg-button)); 
-            transform: translateY(-2px); 
+        .header-icon-button:hover:not(.active) {
+            filter: drop-shadow(0 0 5px var(--tg-button)); /* Brighter glow on hover */
+            transform: translateY(-2px); /* Slight lift */
         }
         .header-icon-button:active {
-            transform: scale(0.95) translateY(0); 
-            filter: drop-shadow(0 0 1px var(--tg-hint)); 
+            transform: scale(0.95) translateY(0); /* Pressed effect */
+            filter: drop-shadow(0 0 1px var(--tg-hint)); /* Dim glow on press */
         }
-        .header-icon-button.active-header-nav { 
-            filter: drop-shadow(0 0 5px var(--tg-button));
-            color: var(--tg-button); 
-            transform: translateY(-1px);
+        .header-icon-button.active {
+            filter: drop-shadow(0 0 5px var(--tg-button)); /* Keep active glow */
         }
         .header-icon-button .notification-badge {
             position: absolute;
@@ -261,9 +247,25 @@
             padding: 5px 0; 
             transition: color 0.2s;
             max-width: 100px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .nav-item .icon { font-size: 24px; } 
-        .nav-item .label { font-size: 12px; }
+        .nav-item .icon { 
+            font-size: 24px; 
+            line-height: 1;
+            margin-bottom: 2px;
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.5); 
+            /* Default icon color */
+            color: var(--tg-hint); 
+        } 
+        .nav-item.active .icon {
+            color: var(--tg-text); /* Active icon color */
+        }
+        .nav-item .label { 
+            font-size: 12px; 
+            line-height: 1;
+        }
         .nav-item.active { filter: drop-shadow(0 0 3px var(--tg-button)); color: var(--tg-text); }
         
         /* Loading Overlay */
@@ -282,7 +284,7 @@
             display: none; 
         }
         .loading-overlay::after { 
-            content: '';
+            content: ' ';
             display: block;
             width: 32px;
             height: 32px;
@@ -317,34 +319,12 @@
             box-sizing: border-box;
             box-shadow: 5px 5px 0px 0px rgba(0,0,0,0.3); 
             animation: fadeIn 0.3s forwards;
-            position: relative; 
-        }
-        .modal-content h2 {
-            margin-top: 0;
-            font-size: 22px;
-            color: var(--tg-text);
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        .modal-content .close-button {
-            background: none;
-            border: none;
-            color: var(--tg-hint);
-            font-size: 24px;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-            filter: drop-shadow(0 0 1px var(--tg-hint));
-        }
-        .modal-content .close-button:hover {
-             filter: drop-shadow(0 0 3px var(--accent-red));
         }
         
         /* Form Group Styling */
         .form-group { margin-bottom: 15px; } 
-        .form-group label { display: block; font-size: 18px; margin-bottom: 8px; color: var(--tg-text); } 
-        .form-group input, .form-group textarea, .form-group select { 
+        .form-group label { display: block; font-size: 18px; margin-bottom: 8px; } 
+        .form-group input, .form-group textarea { 
             width: 100%; 
             padding: 10px; 
             font-size: 18px; 
@@ -358,7 +338,7 @@
             appearance: none;
             box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.2); 
         }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        .form-group input:focus, .form-group textarea:focus {
             outline: none;
             border-color: var(--tg-button); 
             box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.2), 0 0 5px rgba(66, 165, 245, 0.5); 
@@ -397,11 +377,6 @@
             color: var(--notification-text-color);
             border-color: var(--accent-red);
         }
-        .notification-item.status-info { 
-            background-color: var(--notification-info-bg);
-            color: var(--notification-text-color);
-            border-color: var(--tg-button);
-        }
         .notification-item h3 {
             color: var(--notification-text-color); 
             text-shadow: 1px 1px 0px rgba(0,0,0,0.3);
@@ -420,9 +395,6 @@
             font-size: 12px;
             color: rgba(255, 255, 255, 0.6);
             margin-top: 5px;
-        }
-        .notification-item.unread {
-            border-left: 5px solid var(--accent-yellow); 
         }
         
         /* Daily Bonus Card Specifics */
@@ -546,14 +518,16 @@
             box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.2), 0 0 5px rgba(66, 165, 245, 0.5);
         }
 
-        .redeem-code-input-wrapper .button-inline { 
+        .redeem-code-input-wrapper .button-inline { /* Custom class for inline button */
             width: auto; 
             padding: 10px 15px; 
             flex-shrink: 0; 
             display: inline-block; 
+            /* Match standard button raised effect */
             border: 3px solid var(--pixel-border-dark); 
             border-right-color: var(--pixel-border-light); 
             border-bottom-color: var(--pixel-border-light);
+            /* Connect seamlessly with input */
             border-left: none; 
             margin-left: -3px; 
             position: relative; 
@@ -572,6 +546,7 @@
             transition: all 0.05s linear;
         }
 
+        /* Ensure .button-inline:active works correctly */
         .redeem-code-input-wrapper .button-inline:hover:not(.disabled) {
             filter: brightness(1.1);
             box-shadow: 2px 2px 0px 0px rgba(0,0,0,0.2);
@@ -584,150 +559,32 @@
             transform: translateY(1px) translateX(1px);
             box-shadow: none;
         }
-        
-        /* Game Specific Styles */
-        .game-room-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 15px;
-            background: var(--tg-bg);
-            border: 3px solid var(--pixel-border-dark);
-            border-right-color: var(--pixel-border-light);
-            border-bottom-color: var(--pixel-border-light);
-            box-shadow: 1px 1px 0px 0px rgba(0,0,0,0.1); 
-        }
-        .game-room-item .game-info {
-            flex-grow: 1;
-        }
-        .game-room-item .game-info h3 {
-            margin: 0 0 5px 0;
-            color: var(--tg-text);
-        }
-        .game-room-item .game-info p {
-            margin: 0;
+
+        /* Footer for Copyright */
+        .app-footer {
+            margin-top: 30px;
+            text-align: center;
             font-size: 14px;
             color: var(--tg-hint);
         }
-        .game-room-item .join-button {
-            margin-left: 15px;
-            width: auto;
-            padding: 8px 15px;
-            font-size: 16px;
-        }
-        .game-play-area {
-            text-align: center;
-            margin-top: 20px;
-            padding: 15px;
-            background: var(--tg-bg);
-            border: 3px solid var(--pixel-border-dark);
-            border-right-color: var(--pixel-border-light);
-            border-bottom-color: var(--pixel-border-light);
-            box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.1);
-        }
-        .game-players {
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-start; 
-            margin-bottom: 15px;
-            font-size: 22px;
-            position: relative;
-        }
-        .game-player-display {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            min-width: 120px; 
-            padding: 5px;
-        }
-        .game-player-display.active-player {
-            filter: drop-shadow(0 0 3px var(--game-waiting-color)); 
-            border: 1px dashed var(--game-waiting-color); 
-        }
-        .game-player-display .player-name {
-            color: var(--game-player-color);
-            text-shadow: 1px 1px 0px var(--pixel-border-dark);
-            font-size: 18px;
-        }
-        .game-player-display .opponent-name {
-            color: var(--game-opponent-color);
-            text-shadow: 1px 1px 0px var(--pixel-border-dark);
-            font-size: 18px;
-        }
-        .game-player-display .move-emoji {
-            font-size: 48px;
-            min-height: 48px; 
-            margin: 5px 0;
-        }
-        .game-players .vs-text {
-            font-size: 18px;
-            color: var(--tg-hint);
-            margin: 0 10px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .game-stats {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 15px;
-            font-size: 20px;
-            color: var(--tg-text);
-            text-shadow: 1px 1px 0px rgba(0,0,0,0.2);
-        }
-        .game-score {
-            color: var(--accent-yellow);
-            font-size: 28px;
+        .app-footer a {
+            color: var(--tg-button);
+            text-decoration: none;
             margin: 0 5px;
         }
-
-        .game-result-message {
-            margin-top: 20px;
-            font-size: 24px;
-            color: var(--accent-yellow);
-            text-shadow: 2px 2px 0px var(--pixel-border-dark);
-            min-height: 24px; 
-            margin-bottom: 15px;
+        .app-footer a:hover {
+            text-decoration: underline;
         }
 
-        .game-play-area .move-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .game-play-area .move-buttons button {
-            width: 80px;
-            height: 80px;
-            font-size: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--tg-secondary-bg);
-            color: var(--tg-text);
-            border: 3px solid var(--pixel-border-dark);
-            border-right-color: var(--pixel-border-light);
-            border-bottom-color: var(--pixel-border-light);
-        }
-        .game-play-area .move-buttons button:hover:not(:disabled) {
-            filter: brightness(1.1);
-        }
-        .game-play-area .move-buttons button:active:not(:disabled) {
-            border-color: var(--pixel-border-light);
-            border-right-color: var(--pixel-border-dark);
-            border-bottom-color: var(--pixel-border-dark);
-            transform: translateY(1px) translateX(1px);
-        }
-        .game-play-area .move-buttons button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            filter: grayscale(1);
-        }
+        /* Custom Pixel Icons for Navigation (Bottom Bar) */
+        .nav-item .icon-custom-home::before { content: '首页'; } /* Home in Chinese */
+        .nav-item .icon-custom-tasks::before { content: '任务'; } /* Tasks/Quest in Chinese */
+        .nav-item .icon-custom-refer::before { content: '推荐'; } /* Refer/Ally in Chinese */
+        .nav-item .icon-custom-gift::before { content: '宝藏'; } /* Gift/Treasure in Chinese */
+
+        /* Custom Pixel Icons for Header (Top-Right) */
+        .header-icon-button .icon-custom-notifications::before { content: 'NOTIF'; font-size: 18px;} /* Notifications (English) */
+        .header-icon-button .icon-custom-profile::before { content: 'PROFILE'; font-size: 18px;} /* Profile (English) */
 
     </style>
 </head>
@@ -741,14 +598,14 @@
         <div class="header"> 
             <div class="app-title-tagline">
                 <h1 id="welcome-message">Xewee</h1> 
-                <p>Your Pixel Quest for Rewards!</p> 
+                <p>Unleash Your Earning Potential!</p> <!-- Professional tagline -->
             </div>
             <div class="top-right-nav">
-                <button type="button" id="headerNavNotifications" class="header-icon-button" onclick="showView('notificationsView')">
-                    🔔<span id="unreadNotifications" class="notification-badge" style="display:none;">0</span>
+                <button type="button" id="navNotificationsHeader" class="header-icon-button" onclick="showView('notificationsView')">
+                    <span class="icon-custom-notifications"></span><span id="unreadNotifications" class="notification-badge" style="display:none;">0</span>
                 </button>
-                <button type="button" id="headerNavProfile" class="header-icon-button" onclick="showView('profileView')">
-                    👤
+                <button type="button" id="navProfileHeader" class="header-icon-button" onclick="showView('profileView')">
+                    <span class="icon-custom-profile"></span>
                 </button>
             </div>
         </div>
@@ -759,7 +616,26 @@
             <div class="progress-bar"><div id="dailyBonusProgress" class="progress-fill"></div></div>
             <button type="button" id="claimDailyBonusBtn" class="button" style="margin-top: 15px;">Claim Bonus (P10.00)</button>
         </div>
-        <div class="pixel-container announcement-card"> <h3>Announcements</h3> <p id="announcementText">Loading latest news...</p> </div>
+        <div class="pixel-container announcement-card"> 
+            <h3>Announcements</h3> 
+            <p id="announcementText">Loading latest news...</p> 
+        </div>
+        
+        <!-- New: FAQ and News Channel section on Home View -->
+        <div class="pixel-container">
+            <h3>Need Help or News?</h3>
+            <p style="font-size: 16px; margin-bottom: 10px;">Find answers to common questions or stay updated with Xewee news!</p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" class="button" onclick="showView('faqView')" style="flex:1; min-width: 120px; background: var(--pixel-border-dark); color: var(--tg-text);">FAQ</button>
+                <a href="https://t.me/XeweeNews" target="_blank" class="button" style="flex:1; min-width: 120px; background: var(--accent-green); color: var(--pixel-border-dark);">News Channel</a>
+            </div>
+        </div>
+
+        <div class="app-footer">
+            Copyright &copy; 2025 Xewee. All Rights Reserved. | 
+            <button type="button" style="background: none; border: none; color: var(--tg-button); font-family: 'VT323', monospace; font-size: 14px; cursor: pointer; padding: 0; margin: 0 5px;" onclick="showView('privacyPolicyView')">Privacy Policy</button> | 
+            <button type="button" style="background: none; border: none; color: var(--tg-button); font-family: 'VT323', monospace; font-size: 14px; cursor: pointer; padding: 0; margin: 0 5px;" onclick="showView('termsOfServiceView')">Terms of Service</button>
+        </div>
     </div>
 
     <!-- Tasks View -->
@@ -779,6 +655,7 @@
         <div class="pixel-container">
             <h3>Your Unique Code</h3>
             <p style="font-size: 16px; line-height: 1.5;">Share this code. For every friend who joins and completes a task, you earn a <strong>10% commission</strong> based on the task's reward!</p>
+            <!-- Referral Tier System can be added here with more backend data -->
             <div id="referralLink" style="background: var(--tg-bg); padding: 10px; word-wrap: break-word; font-size: 14px; margin: 15px 0; border: 2px inset var(--pixel-border-dark);"></div>
             <button type="button" id="copyLinkBtn" class="button">Copy Code</button>
         </div>
@@ -806,80 +683,18 @@
         </div>
     </div>
 
-    <!-- Games View (NEW FEATURE) -->
-    <div id="gamesView" class="app-view">
-        <div class="header"> <h1>Xewee Games</h1> </div>
-        
-        <div class="pixel-container">
-            <h3>Create Game Room (Jack N Poy)</h3>
-            <form id="createGameRoomForm">
-                <div class="form-group">
-                    <label for="gameBetAmount">Bet Amount</label>
-                    <input type="number" id="gameBetAmount" placeholder="e.g., 50.00" min="10" required>
-                </div>
-                <div class="form-group">
-                    <label for="gameRoomName">Room Name (Optional)</label>
-                    <input type="text" id="gameRoomName" placeholder="e.g., My RPS Challenge">
-                </div>
-                <button type="submit" class="button" style="background: var(--accent-green); color: var(--pixel-border-dark);">Create Room</button>
-            </form>
-            <button type="button" class="button" style="margin-top: 15px; background: var(--tg-hint);" onclick="showGameRulesModal()">View Rules</button>
-        </div>
-
-        <div class="pixel-container">
-            <h3>Available Rooms</h3>
-            <button type="button" id="refreshRoomsBtn" class="button" style="margin-bottom: 15px; background: var(--pixel-border-dark);">Refresh Rooms</button>
-            <ul id="availableRoomsList" class="list">
-                <!-- Dynamic list of available rooms will be loaded here -->
-                <li class="pixel-container"><p>No rooms available. Create one!</p></li>
-            </ul>
-        </div>
-
-        <div class="pixel-container" id="myActiveGameSection" style="display:none;">
-            <h3>My Active Game: <span id="activeGameRoomName"></span></h3>
-            <p id="activeGameStatus" style="font-size: 16px; color: var(--game-waiting-color); margin-bottom: 10px;"></p>
-            
-            <div id="gamePlayArea" style="display:none;">
-                <div class="game-players">
-                    <div class="game-player-display" id="player1Display">
-                        <span class="player-name" id="player1Name"></span>
-                        <div class="move-emoji" id="player1Move"></div>
-                        <span class="player-score-text">Score: <span id="player1Score">0</span></span>
-                    </div>
-                    <span class="vs-text">VS</span>
-                    <div class="game-player-display" id="player2Display">
-                        <span class="opponent-name" id="player2Name"></span>
-                        <div class="move-emoji" id="player2Move"></div>
-                        <span class="opponent-score-text">Score: <span id="player2Score">0</span></span>
-                    </div>
-                </div>
-                
-                <div class="game-result-message" id="gameResultMessage"></div>
-
-                <p id="yourTurnStatus" style="margin-top: 20px; font-size: 18px; color: var(--accent-yellow);"></p>
-                <div class="move-buttons">
-                    <button type="button" data-move="rock">✊</button>
-                    <button type="button" data-move="paper">✋</button>
-                    <button type="button" data-move="scissors">✌️</button>
-                </div>
-            </div>
-            <button type="button" id="leaveGameBtn" class="button" style="margin-top: 20px; background: var(--accent-red);">Leave Game</button>
-        </div>
-    </div>
-
-
     <!-- Notifications View -->
     <div id="notificationsView" class="app-view">
-        <div class="header" style="justify-content: flex-start; gap: 10px; margin-bottom: 20px;"> 
+        <div class="header" style="justify-content: flex-start; gap: 10px;"> 
             <h1>Notifications</h1> 
             <button type="button" id="markAllReadBtn" class="button" style="width: auto; padding: 8px 12px; font-size: 16px; margin: 0; background: var(--pixel-border-dark); color: var(--tg-text);">Mark All As Read</button>
         </div>
         <ul id="notificationList" class="list"></ul>
     </div>
 
-    <!-- Profile View -->
+    <!-- Profile View (Now Accessible from Header) -->
     <div id="profileView" class="app-view">
-        <div class="header"> <h1>Player Info</h1> </div>
+        <div class="header"> <h1>Profile Info</h1> </div> <!-- Changed to Profile Info -->
         <div class="pixel-container">
             <p id="profileName" style="font-size: 18px;">Player: ...</p>
             <p id="profileId" style="font-size: 14px; color: var(--tg-hint);">ID: ...</p>
@@ -915,10 +730,63 @@
         </div>
     </div>
 
+    <!-- New: FAQ View -->
+    <div id="faqView" class="app-view">
+        <div class="header"><h1>Frequently Asked Questions</h1></div>
+        <div class="pixel-container">
+            <h3>What is Xewee?</h3>
+            <p>Xewee is a task-based reward platform on Telegram where you can earn rewards by completing various tasks given by admins.</p>
+        </div>
+        <div class="pixel-container">
+            <h3>How do I earn?</h3>
+            <p>Complete tasks listed on the "Tasks" board. Each task has a specific reward. You can also earn commissions by referring friends!</p>
+        </div>
+        <div class="pixel-container">
+            <h3>What are Gift Tickets?</h3>
+            <p>Gift Tickets allow you to send earned balance to other Xewee players. A small fee applies to the sent amount.</p>
+        </div>
+        <div class="pixel-container">
+            <h3>How do I withdraw my earnings?</h3>
+            <p>Go to the "Profile" section, enter your desired withdrawal amount, select your method (GCash/Maya), and provide your account number. A fee applies, and withdrawals are subject to review.</p>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="button" class="button" onclick="showView('homeView')" style="width: auto; padding: 10px 20px;">Back to Home</button>
+        </div>
+    </div>
+
+    <!-- New: Privacy Policy View -->
+    <div id="privacyPolicyView" class="app-view">
+        <div class="header"><h1>Privacy Policy</h1></div>
+        <div class="pixel-container">
+            <p>Your privacy is important to us. Xewee collects minimal user data (Telegram User ID, First Name) necessary for operating the platform, managing balances, tasks, and referrals.</p>
+            <p>We do not share your personal data with third parties without your explicit consent. All data is securely stored and used only for the functionality of the Xewee platform.</p>
+            <p>By using Xewee, you agree to this Privacy Policy. We may update this policy from time to time.</p>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="button" class="button" onclick="showView('homeView')" style="width: auto; padding: 10px 20px;">Back to Home</button>
+        </div>
+    </div>
+
+    <!-- New: Terms of Service View -->
+    <div id="termsOfServiceView" class="app-view">
+        <div class="header"><h1>Terms of Service</h1></div>
+        <div class="pixel-container">
+            <p>By using Xewee, you agree to these Terms of Service.</p>
+            <p>1. **Eligibility:** You must be at least 18 years old to use Xewee. Xewee is for entertainment purposes only and does not offer real money gambling.</p>
+            <p>2. **Fair Play:** Any attempt to defraud, exploit bugs, or manipulate the system for unfair advantage will result in account suspension or permanent ban without warning and forfeiture of all earnings.</p>
+            <p>3. **Withdrawals:** Withdrawals are processed after manual review and are subject to minimum/maximum amounts and fees. Xewee reserves the right to reject withdrawals for suspicious activity.</p>
+            <p>4. **Account Termination:** Xewee reserves the right to terminate accounts, revoke earnings, or modify services at its sole discretion without prior notice.</p>
+            <p>5. **Changes:** These Terms may be updated periodically. Your continued use signifies acceptance of the new terms.</p>
+            <p>This is an extreme parody game made for responsible adults. No purchase is necessary. Buying stuff is totally optional and doesn’t guarantee rewards.</p>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="button" class="button" onclick="showView('homeView')" style="width: auto; padding: 10px 20px;">Back to Home</button>
+        </div>
+    </div>
+
     <!-- Task Submission Modal -->
     <div id="taskModal" class="modal-overlay">
         <div class="modal-content">
-            <button type="button" class="close-button" onclick="closeTaskSubmissionModal()">✖</button>
             <h2 id="taskModalTitle" style="font-size: 20px;">Submit Proof</h2>
             <form id="taskProofForm">
                 <div class="form-group"><label for="taskProofText">Note (Optional)</label><textarea id="taskProofText" rows="2"></textarea></div>
@@ -928,38 +796,12 @@
         </div>
     </div>
 
-    <!-- Game Rules Modal (NEW) -->
-    <div id="gameRulesModal" class="modal-overlay">
-        <div class="modal-content">
-            <button type="button" class="close-button" onclick="closeGameRulesModal()">✖</button>
-            <h2>Jack N Poy Rules</h2>
-            <p style="font-size: 16px; margin-bottom: 10px;"><strong>Objective:</strong> Be the first player to reach a score of 3!</p>
-            <p style="font-size: 16px; margin-bottom: 10px;"><strong>How to Play:</strong></p>
-            <ul style="font-size: 16px; margin-left: 20px; color: var(--tg-text); margin-bottom: 10px;">
-                <li>Each player chooses Rock (✊), Paper (✋), or Scissors (✌️).</li>
-                <li>Rock crushes Scissors (Rock wins).</li>
-                <li>Paper covers Rock (Paper wins).</li>
-                <li>Scissors cuts Paper (Scissors wins).</li>
-                <li>If both players choose the same, it's a draw.</li>
-            </ul>
-            <p style="font-size: 16px; margin-bottom: 10px;"><strong>Betting:</strong></p>
-            <ul style="font-size: 16px; margin-left: 20px; color: var(--tg-text); margin-bottom: 10px;">
-                <li>Both players must put up the same bet amount.</li>
-                <li>The winner takes the entire pot (double the bet amount).</li>
-                <li>If a player leaves the game early, their bet is refunded, and the game is cancelled for both players.</li>
-            </ul>
-            <button type="button" class="button" style="margin-top: 20px;" onclick="closeGameRulesModal()">Got It!</button>
-        </div>
-    </div>
-
-
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Navigation Bar (4 Buttons Only) -->
     <nav class="bottom-nav">
-        <div id="navHome" class="nav-item active" onclick="showView('homeView')"> <div class="icon">🏠</div> <div class="label">Home</div> </div>
-        <div id="navTasks" class="nav-item" onclick="showView('tasksView')"> <div class="icon">📜</div> <div class="label">Tasks</div> </div>
-        <div id="navReferral" class="nav-item" onclick="showView('referralView')"> <div class="icon">🤝</div> <div class="label">Refer</div> </div>
-        <div id="navGift" class="nav-item" onclick="showView('giftView')"> <div class="icon">🎁</div> <div class="label">Gift</div> </div>
-        <div id="navGames" class="nav-item" onclick="showView('gamesView')"> <div class="icon">🎮</div> <div class="label">Games</div> </div>
+        <div id="navHome" class="nav-item active" onclick="showView('homeView')"> <span class="icon-custom-home icon"></span> <div class="label">Home</div> </div>
+        <div id="navTasks" class="nav-item" onclick="showView('tasksView')"> <span class="icon-custom-tasks icon"></span> <div class="label">Tasks</div> </div>
+        <div id="navReferral" class="nav-item" onclick="showView('referralView')"> <span class="icon-custom-refer icon"></span> <div class="label">Refer</div> </div>
+        <div id="navGift" class="nav-item" onclick="showView('giftView')"> <span class="icon-custom-gift icon"></span> <div class="label">Gift</div> </div>
     </nav>
     
     <!-- Embedded JavaScript Logic -->
@@ -980,26 +822,55 @@
         // --- Configuration (UPDATE THESE!) ---
         // Normalize API_BASE_URL to ensure no trailing slash.
         // IMPORTANT: Replace with your Railway backend URL!
-        const rawApiBaseUrl = "https://web-production-078c8.up.railway.app"; 
+        const rawApiBaseUrl = "https://your-xewee-backend.railway.app"; 
         const API_BASE_URL = rawApiBaseUrl.endsWith('/') ? rawApiBaseUrl.slice(0, -1) : rawApiBaseUrl; 
         
-        const BOT_USERNAME = "XeweeBot"; 
+        const BOT_USERNAME = "XeweeBot"; // *** IMPORTANT: REPLACE WITH YOUR BOT'S @USERNAME (without the @) ***
         // ------------------------------------
 
         const user = tg.initDataUnsafe.user;
         const initData = tg.initData;
 
-        let appData = {}; 
-        let withdrawalMethod = ''; 
-        let activeGameRoomId = null; 
-        let gameUpdateInterval = null; 
+        let appData = {}; // Stores all initial data fetched from the backend
+        let withdrawalMethod = ''; // To track selected withdrawal method (GCash/Maya)
         
+        // Task Milestones (Matches backend configuration)
         const TASK_MILESTONES_UI = {10: 50.0, 20: 150.0, 30: 400.0}; 
 
-        // --- Utility Functions (Defined first for scope) ---
+        // --- Utility Functions ---
         const views = document.querySelectorAll('.app-view');
         const bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item'); 
-        const headerNavButtons = document.querySelectorAll('.header-icon-button');
+        const headerIconButtons = document.querySelectorAll('.header-icon-button');
+        
+        function showView(viewId) { 
+            tg.HapticFeedback.impactOccurred('light'); 
+            
+            views.forEach(v => v.classList.remove('active')); 
+            document.getElementById(viewId).classList.add('active'); 
+            
+            // Remove 'active' from all bottom nav items
+            bottomNavItems.forEach(n => n.classList.remove('active')); 
+            // Also remove active styling from header buttons
+            headerIconButtons.forEach(btn => btn.classList.remove('active'));
+
+            // Set active class for bottom nav items
+            const currentBottomNavItem = document.getElementById(`nav${viewId.replace('View', '')}`);
+            if (currentBottomNavItem) {
+                currentBottomNavItem.classList.add('active'); 
+            } else if (viewId === 'notificationsView') {
+                document.getElementById('navNotificationsHeader').classList.add('active');
+            } else if (viewId === 'profileView') {
+                document.getElementById('navProfileHeader').classList.add('active');
+            }
+
+
+            // Special handling for views that need fresh data
+            if (viewId === 'notificationsView') {
+                fetchNotifications();
+            } else if (viewId === 'homeView' || viewId === 'profileView') {
+                fetchInitialData(); 
+            }
+        }
 
         function showToast(message) { 
             const existingToast = document.querySelector('.toast');
@@ -1012,215 +883,108 @@
                 toast.remove(); 
             }, 2500); 
         }
-
-        function showGameRulesModal() {
-            document.getElementById('gameRulesModal').style.display = 'flex';
-        }
-
-        function closeGameRulesModal() {
-            document.getElementById('gameRulesModal').style.display = 'none';
-        }
-
-        function closeTaskSubmissionModal() {
-            document.getElementById('taskModal').style.display = 'none';
-            document.getElementById('taskProofForm').reset();
-        }
-
-        // --- API Calls Helper Function ---
-        async function callApi(endpoint, method = 'POST', body = {}) {
+        
+        // --- API Calls ---
+        async function fetchInitialData() {
             document.getElementById('loading').style.display = 'flex';
             try {
-                const url = `${API_BASE_URL}${endpoint}`;
-                const options = {
-                    method: method,
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ user_id: user.id, _auth: initData, ...body })
-                };
-                console.log(`API Call: ${method} ${url} with body:`, options.body); 
-                const response = await fetch(url, options);
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.detail || `Network response was not ok: ${response.status}`);
+                const url = `${API_BASE_URL}/get_initial_data`;
+                console.log("Fetching initial data from:", url); 
+                const response = await fetch(url, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ user_id: user.id, _auth: initData }) 
+                });
+                if (!response.ok) { 
+                    const errorData = await response.json(); 
+                    throw new Error(errorData.detail || `Network response was not ok: ${response.status}`); 
                 }
-                return data;
-            } catch (error) {
-                console.error(`API Call to ${endpoint} error:`, error);
-                tg.showAlert(error.message || `An error occurred while calling ${endpoint}.`);
-                throw error; 
-            } finally {
-                document.getElementById('loading').style.display = 'none';
+                const data = await response.json();
+                if(data.error) { 
+                    tg.showAlert(data.detail || data.error); 
+                    if(data.detail.includes("banned") || data.detail.includes("restricted")){ 
+                        tg.close(); 
+                    } 
+                    return; 
+                }
+                appData = data; 
+                renderAll(); 
+            } catch (error) { 
+                console.error("fetchInitialData error:", error);
+                tg.showAlert(error.message || 'COULD NOT LOAD DATA. PLEASE RESTART.'); 
+            } finally { 
+                document.getElementById('loading').style.display = 'none'; 
             }
         }
-        
-        // --- UI Rendering Functions (Defined before they are called) ---
-        function renderNotifications(notifications) {
-            const notificationList = document.getElementById('notificationList');
-            notificationList.innerHTML = ''; 
 
-            if (!notifications || notifications.length === 0) {
-                notificationList.innerHTML = '<li class="pixel-container"><p>No new notifications.</p></li>';
-                return;
+        async function fetchNotifications() {
+            document.getElementById('loading').style.display = 'flex';
+            try {
+                const url = `${API_BASE_URL}/get_notifications`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ user_id: user.id, _auth: initData })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `Failed to fetch notifications: ${response.status}`);
+                }
+                const notifications = await response.json();
+                renderNotifications(notifications);
+                
+                // Update notification badge (assuming 'is_read' field or status determines unread)
+                // You'll need to update your backend to return `is_read` status for notifications
+                // For now, let's just count total non-pending notifications
+                const unreadCount = notifications.filter(n => n.status !== 'read' /* Placeholder for backend 'read' status */).length; 
+                const notificationBadge = document.getElementById('unreadNotifications');
+                if (unreadCount > 0) {
+                    notificationBadge.innerText = unreadCount;
+                    notificationBadge.style.display = 'block';
+                } else {
+                    notificationBadge.style.display = 'none';
+                }
+
+            } catch (error) {
+                console.error("fetchNotifications error:", error);
+                tg.showAlert(error.message || 'Could not load notifications.');
+            } finally { 
+                document.getElementById('loading').style.display = 'none'; 
             }
+        }
 
-            notifications.forEach(notif => {
-                const li = document.createElement('li');
-                let statusClass = `status-${notif.status}`;
-                if (notif.type === 'referral_join' || notif.type === 'gift_received' || notif.type.startsWith('game_')) {
-                    statusClass = 'status-info'; 
+        async function markAllNotificationsAsRead() {
+            tg.HapticFeedback.impactOccurred('light');
+            tg.showConfirm('Mark all notifications as read?', async (ok) => {
+                if (ok) {
+                    document.getElementById('loading').style.display = 'flex';
+                    try {
+                        // This endpoint needs to be implemented in main.py
+                        const url = `${API_BASE_URL}/mark_notifications_as_read`; 
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ user_id: user.id, _auth: initData })
+                        });
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.detail || 'Failed to mark notifications as read.');
+                        }
+                        showToast('All notifications marked as read!');
+                        fetchNotifications(); 
+                        document.getElementById('unreadNotifications').style.display = 'none'; 
+                    } catch (error) {
+                        console.error("Mark all as read error:", error);
+                        tg.showAlert(error.message || 'Failed to mark notifications as read.');
+                    } finally {
+                        document.getElementById('loading').style.display = 'none';
+                    }
                 }
-                li.className = `list-item notification-item ${statusClass} ${notif.is_read ? '' : 'unread'}`;
-                
-                let detailsHtml = '';
-                let title = '';
-
-                if (notif.type === 'task_submission') {
-                    title = `Task: ${notif.description}`;
-                    detailsHtml = `
-                        <p>Reward: P${notif.reward.toFixed(2)}</p>
-                    `;
-                } else if (notif.type === 'withdrawal') {
-                    title = `Withdrawal: P${notif.amount.toFixed(2)}`;
-                    detailsHtml = `
-                        <p>Method: ${notif.method}</p>
-                    `;
-                } else if (notif.type === 'referral_join') {
-                    title = `New Friend Joined!`;
-                    detailsHtml = `
-                        <p>${notif.message}</p> 
-                    `;
-                } else if (notif.type === 'gift_received') {
-                    title = `Gift Received!`;
-                    detailsHtml = `
-                        <p>${notif.message}</p>
-                    `;
-                } else if (notif.type === 'game_won' || notif.type === 'game_lost') {
-                    title = notif.type === 'game_won' ? 'Game Won!' : 'Game Lost!';
-                    detailsHtml = `<p>${notif.message}</p>`;
-                }
-
-
-                if (notif.status === 'rejected' && notif.reason) {
-                    detailsHtml += `<p class="reason">Reason: ${notif.reason}</p>`;
-                }
-                
-                li.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div>
-                            <h3>${title}</h3>
-                            ${detailsHtml}
-                            <div class="date">${new Date(notif.date).toLocaleDateString()}</div>
-                        </div>
-                        <span class="status ${statusClass}" style="flex-shrink: 0; margin-left: 10px;">${notif.status.toUpperCase()}</span>
-                    </div>
-                `;
-                notificationList.appendChild(li);
             });
         }
 
-        function updateGameUI(gameData) {
-            const statusElement = document.getElementById('activeGameStatus');
-            const gamePlayArea = document.getElementById('gamePlayArea');
-            const player1Display = document.getElementById('player1Display');
-            const player2Display = document.getElementById('player2Display');
-            const player1NameElement = document.getElementById('player1Name');
-            const player2NameElement = document.getElementById('player2Name');
-            const player1ScoreElement = document.getElementById('player1Score');
-            const player2ScoreElement = document.getElementById('player2Score');
-            const player1MoveElement = document.getElementById('player1Move');
-            const player2MoveElement = document.getElementById('player2Move');
-            const gameResultMessageElement = document.getElementById('gameResultMessage');
-            const yourTurnStatus = document.getElementById('yourTurnStatus');
-            const moveButtons = document.querySelectorAll('#gamePlayArea .move-buttons button');
-
-            const isCreator = (gameData.creator_id === user.id);
-            
-            player1NameElement.innerText = user.first_name || 'You';
-            player2NameElement.innerText = gameData.opponent_name || 'Opponent';
-
-            player1ScoreElement.innerText = isCreator ? gameData.creator_score : gameData.opponent_score;
-            player2ScoreElement.innerText = isCreator ? gameData.opponent_score : gameData.creator_score;
-
-            const currentPlayerLastMove = isCreator ? gameData.creator_last_move : gameData.opponent_last_move;
-            const opponentPlayerLastMove = isCreator ? gameData.opponent_last_move : gameData.creator_last_move;
-            
-            player1MoveElement.innerText = MOVE_EMOJIS[currentPlayerLastMove] || '';
-            player2MoveElement.innerText = MOVE_EMOJIS[opponentPlayerLastMove] || '';
-
-
-            if (gameData.status === 'waiting_for_opponent') {
-                statusElement.innerText = `Room: ${gameData.room_name} - Waiting for opponent... (Bet: P${gameData.bet_amount.toFixed(2)})`;
-                gamePlayArea.style.display = 'none';
-                yourTurnStatus.innerText = "Waiting for an opponent to join...";
-                moveButtons.forEach(btn => btn.disabled = true);
-                player1Display.classList.remove('active-player');
-                player2Display.classList.remove('active-player');
-            } else if (gameData.status === 'in_progress') {
-                statusElement.innerText = `Room: ${gameData.room_name} - Game in progress! (Bet: P${gameData.bet_amount.toFixed(2)})`;
-                gamePlayArea.style.display = 'block';
-
-                const playerMoved = gameData.player_move_made;
-                const opponentMoved = gameData.opponent_move_made;
-                
-                if (!playerMoved) { 
-                    yourTurnStatus.innerText = "Make your move!";
-                    moveButtons.forEach(btn => btn.disabled = false);
-                    player1Display.classList.add('active-player');
-                    player2Display.classList.remove('active-player');
-                } else if (playerMoved && !opponentMoved) { 
-                    yourTurnStatus.innerText = "Waiting for opponent's move...";
-                    moveButtons.forEach(btn => btn.disabled = true);
-                    player1Display.classList.remove('active-player');
-                    player2Display.classList.add('active-player');
-                } else { 
-                    yourTurnStatus.innerText = gameData.last_round_result || "Waiting for next round...";
-                    moveButtons.forEach(btn => btn.disabled = true); 
-                    player1Display.classList.remove('active-player');
-                    player2Display.classList.remove('active-player');
-                    player1MoveElement.innerText = ''; 
-                    player2MoveElement.innerText = ''; 
-                }
-
-                gameResultMessageElement.innerText = gameData.last_round_result || "";
-
-            } else if (gameData.status === 'finished' || gameData.status === 'cancelled') {
-                statusElement.innerText = `Game Over!`;
-                gamePlayArea.style.display = 'block'; 
-                
-                player1MoveElement.innerText = MOVE_EMOJIS[currentPlayerLastMove] || '';
-                player2MoveElement.innerText = MOVE_EMOJIS[opponentPlayerLastMove] || '';
-                
-                player1ScoreElement.innerText = isCreator ? gameData.creator_score : gameData.opponent_score;
-                player2ScoreElement.innerText = isCreator ? gameData.opponent_score : gameData.creator_score;
-                gameResultMessageElement.innerText = gameData.final_result_message;
-                yourTurnStatus.innerText = ""; 
-                moveButtons.forEach(btn => btn.disabled = true); 
-                player1Display.classList.remove('active-player');
-                player2Display.classList.remove('active-player');
-
-                activeGameRoomId = null; 
-                stopGamePolling();
-                document.getElementById('myActiveGameSection').style.display = 'none';
-                fetchAvailableRooms();
-                fetchInitialDataAndRender(); // Refresh to update balance
-            }
-        }
-
-        // --- Game Polling Functions ---
-        function startGamePolling(roomId) {
-            stopGamePolling(); 
-            gameUpdateInterval = setInterval(() => fetchGameStatus(roomId), 3000); 
-        }
-
-        function stopGamePolling() {
-            if (gameUpdateInterval) {
-                clearInterval(gameUpdateInterval);
-                gameUpdateInterval = null;
-            }
-        }
-
-        // --- Main Rendering Function ---
+        // --- UI Rendering ---
         function renderAll(){
-            // --- Home View ---
             document.getElementById('balanceAmount').innerText = `P${(appData.balance || 0).toFixed(2)}`;
             document.getElementById('announcementText').innerText = appData.announcement || "Welcome! No new announcements.";
             
@@ -1242,7 +1006,6 @@
                 dailyBonusProgress.style.width = `${(appData.daily_claim_invites / appData.daily_bonus_req) * 100}%`; 
             }
 
-            // --- Tasks View ---
             const taskList = document.getElementById('taskList'); 
             taskList.innerHTML = '';
             if (appData.tasks && appData.tasks.length > 0) { 
@@ -1263,12 +1026,10 @@
                 taskList.innerHTML = '<li class="pixel-container"><p>No tasks available. Check back later!</p></li>'; 
             }
 
-            // --- Referrals View ---
             document.getElementById('referralCount').innerText = appData.referral_count || 0;
             document.getElementById('successfulReferralCount').innerText = appData.successful_referrals || 0;
             document.getElementById('referralLink').innerText = `https://t.me/${BOT_USERNAME}?start=${user.id}`;
 
-            // --- Profile View ---
             document.getElementById('profileName').innerText = `Player: ${user.first_name || 'Unknown'}`;
             document.getElementById('profileId').innerText = `ID: ${user.id}`;
             document.getElementById('tasksCompleted').innerText = `Tasks Completed: ${appData.tasks_completed || 0}`;
@@ -1311,70 +1072,58 @@
                 document.getElementById('withdrawalMaintenanceOverlay').style.display = 'none'; 
             }
 
-            // --- Gift View ---
             document.getElementById('giftTicketCount').innerText = appData.gift_tickets || 0;
             document.getElementById('buyTicketBtn').innerText = `Buy Tickets (P${(appData.gift_ticket_price || 10.00).toFixed(2)})`;
             document.querySelector('#giftView .pixel-container p').innerHTML = `Uses 1 Ticket. A ${((appData.gift_fee_percent || 0.05)*100).toFixed(0)}% fee applies to the sent amount from your balance. Min: P${(appData.gift_min_amount || 30.00).toFixed(2)}`;
 
-            // Call fetchNotifications only once here, as it's called again by showView for notificationsView
-            // and we want it to update the badge on initial app load.
             fetchNotifications(); 
         }
-        
-        // --- Primary Data Fetching and Rendering Trigger ---
-        async function fetchInitialDataAndRender() {
-            try {
-                appData = await callApi('/get_initial_data', 'POST', {});
-                activeGameRoomId = appData.active_game_room_id; 
-                renderAll(); 
-            } catch (error) { 
-                tg.showAlert(error.message || 'COULD NOT LOAD DATA. PLEASE RESTART.'); 
-            }
-        }
 
+        function renderNotifications(notifications) {
+            const notificationList = document.getElementById('notificationList');
+            notificationList.innerHTML = ''; 
 
-        // --- Navigation Logic (Centralized) ---
-        function showView(viewId) { 
-            tg.HapticFeedback.impactOccurred('light'); 
-            
-            views.forEach(v => v.classList.remove('active')); 
-            document.getElementById(viewId).classList.add('active'); 
-            
-            bottomNavItems.forEach(n => n.classList.remove('active')); 
-            headerNavButtons.forEach(btn => btn.classList.remove('active-header-nav')); 
-
-            const currentBottomNavItem = document.getElementById(`nav${viewId.replace('View', '')}`);
-            if (currentBottomNavItem) {
-                currentBottomNavItem.classList.add('active'); 
-            } else if (viewId === 'notificationsView') {
-                document.getElementById('headerNavNotifications').classList.add('active-header-nav');
-            } else if (viewId === 'profileView') {
-                document.getElementById('headerNavProfile').classList.add('active-header-nav');
+            if (!notifications || notifications.length === 0) {
+                notificationList.innerHTML = '<li class="pixel-container"><p>No new notifications.</p></li>';
+                return;
             }
 
-            if (viewId === 'notificationsView') {
-                fetchNotifications();
-            } else if (viewId === 'homeView' || viewId === 'profileView') {
-                fetchInitialDataAndRender(); 
-            } else if (viewId === 'gamesView') {
-                fetchAvailableRooms();
-                if (activeGameRoomId) {
-                    document.getElementById('myActiveGameSection').style.display = 'block';
-                    document.getElementById('gamePlayArea').style.display = 'block'; 
-                    startGamePolling(activeGameRoomId);
-                } else {
-                    document.getElementById('myActiveGameSection').style.display = 'none';
-                    document.getElementById('gamePlayArea').style.display = 'none'; 
-                    stopGamePolling();
+            notifications.forEach(notif => {
+                const li = document.createElement('li');
+                li.className = `list-item notification-item status-${notif.status}`;
+                
+                let detailsHtml = '';
+                if (notif.type === 'task_submission') {
+                    detailsHtml = `
+                        <h3>Task: ${notif.description}</h3>
+                        <p>Reward: P${notif.reward.toFixed(2)}</p>
+                    `;
+                } else if (notif.type === 'withdrawal') {
+                    detailsHtml = `
+                        <h3>Withdrawal: P${notif.amount.toFixed(2)}</h3>
+                        <p>Method: ${notif.method}</p>
+                    `;
                 }
-            } else {
-                stopGamePolling(); 
-            }
+
+                if (notif.status === 'rejected' && notif.reason) {
+                    detailsHtml += `<p class="reason">Reason: ${notif.reason}</p>`;
+                }
+                
+                li.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            ${detailsHtml}
+                            <div class="date">${new Date(notif.date).toLocaleDateString()}</div>
+                        </div>
+                        <span class="status status-${notif.status}" style="flex-shrink: 0; margin-left: 10px;">${notif.status.toUpperCase()}</span>
+                    </div>
+                `;
+                notificationList.appendChild(li);
+            });
         }
-
-
+        
         // --- Event Listeners ---
-        window.addEventListener('load', fetchInitialDataAndRender); 
+        window.addEventListener('load', fetchInitialData); 
 
         if (user && user.first_name) {
              document.getElementById('welcome-message').innerText = `Hey, ${user.first_name}!`;
@@ -1395,12 +1144,25 @@
                 tg.showAlert("You must meet the invite requirements or wait until tomorrow to claim."); 
                 return; 
             } 
+            document.getElementById('loading').style.display = 'flex'; 
             try { 
-                await callApi('/claim_daily_bonus', 'POST', {});
+                const url = `${API_BASE_URL}/claim_daily_bonus`;
+                const response = await fetch(url, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ user_id: user.id, _auth: initData }) 
+                }); 
+                if (!response.ok) { 
+                    const errorData = await response.json(); 
+                    throw new Error(errorData.detail || 'Failed to claim bonus.'); 
+                } 
                 tg.showAlert(`P${(appData.daily_bonus_amount || 10.0).toFixed(2)} has been added to your balance!`); 
-                fetchInitialDataAndRender(); 
+                fetchInitialData(); 
             } catch (error) { 
                 console.error("Claim daily bonus error:", error);
+                tg.showAlert(error.message || 'Could not claim daily bonus.'); 
+            } finally { 
+                document.getElementById('loading').style.display = 'none'; 
             } 
         });
 
@@ -1419,12 +1181,14 @@
         }
 
         document.getElementById('cancelSubmitBtn').addEventListener('click', () => { 
-            closeTaskSubmissionModal();
+            taskModal.style.display = 'none'; 
+            document.getElementById('taskProofForm').reset(); 
         });
 
         taskModal.addEventListener('click', (e) => { 
             if (e.target === taskModal) {
-                closeTaskSubmissionModal();
+                taskModal.style.display = 'none'; 
+                document.getElementById('taskProofForm').reset(); 
             }
         });
 
@@ -1442,13 +1206,27 @@
             reader.readAsDataURL(photoInput.files[0]); 
             
             reader.onload = async () => { 
+                document.getElementById('loading').style.display = 'flex'; 
                 try { 
-                    await callApi('/submit_task_proof', 'POST', { task_id: currentTaskId, text, photo: reader.result });
+                    const url = `${API_BASE_URL}/submit_task_proof`;
+                    const response = await fetch(url, { 
+                        method: 'POST', 
+                        headers: {'Content-Type': 'application/json'}, 
+                        body: JSON.stringify({ user_id: user.id, _auth: initData, task_id: currentTaskId, text, photo: reader.result }) 
+                    }); 
+                    if (!response.ok) { 
+                        const errorData = await response.json(); 
+                        throw new Error(errorData.detail || 'Submission failed.'); 
+                    } 
                     tg.showAlert('Proof submitted for review!'); 
-                    closeTaskSubmissionModal(); 
-                    fetchInitialDataAndRender(); 
+                    taskModal.style.display = 'none'; 
+                    document.getElementById('taskProofForm').reset(); 
+                    fetchInitialData(); 
                 } catch (error) { 
                     console.error("Task submission error:", error);
+                    tg.showAlert(error.message || 'Submission failed.'); 
+                } finally { 
+                    document.getElementById('loading').style.display = 'none'; 
                 } 
             }; 
             reader.onerror = () => { 
@@ -1463,13 +1241,27 @@
                 showToast('Please enter a code.');
                 return; 
             } 
+            document.getElementById('loading').style.display = 'flex'; 
             try { 
-                const result = await callApi('/redeem_code', 'POST', { code: code });
+                const url = `${API_BASE_URL}/redeem_code`;
+                const response = await fetch(url, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ user_id: user.id, _auth: initData, code }) 
+                }); 
+                if (!response.ok) { 
+                    const errorData = await response.json(); 
+                    throw new Error(errorData.detail || 'Invalid code.'); 
+                } 
+                const result = await response.json(); 
                 tg.showAlert(`Success! P${result.amount_rewarded.toFixed(2)} added to your balance.`); 
                 document.getElementById('redeemCodeInput').value = ''; 
-                fetchInitialDataAndRender(); 
+                fetchInitialData(); 
             } catch (error) { 
                 console.error("Redeem code error:", error);
+                tg.showAlert(error.message || 'Invalid code.'); 
+            } finally { 
+                document.getElementById('loading').style.display = 'none'; 
             } 
         });
 
@@ -1519,10 +1311,20 @@
                 return; 
             } 
             
+            document.getElementById('loading').style.display = 'flex'; 
             try { 
-                await callApi('/submit_withdrawal', 'POST', { amount, method: withdrawalMethod, details });
+                const url = `${API_BASE_URL}/submit_withdrawal`;
+                const response = await fetch(url, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ user_id: user.id, _auth: initData, amount, method: withdrawalMethod, details }) 
+                }); 
+                if (!response.ok) { 
+                    const errorData = await response.json(); 
+                    throw new Error(errorData.detail || 'Submission failed.'); 
+                } 
                 tg.showAlert('Withdrawal request submitted!'); 
-                fetchInitialDataAndRender(); 
+                fetchInitialData(); 
                 document.getElementById('withdrawForm').reset(); 
                 withdrawalMethod = ''; 
                 document.getElementById('gcashBtn').classList.remove('selected'); 
@@ -1530,6 +1332,9 @@
                 document.getElementById('withdrawalFeeText').style.display = 'none'; 
             } catch (error) { 
                 console.error("Submit withdrawal error:", error);
+                tg.showAlert(error.message || 'Withdrawal failed. Please try again.'); 
+            } finally { 
+                document.getElementById('loading').style.display = 'none'; 
             } 
         });
 
@@ -1549,12 +1354,25 @@
             const giftTicketPrice = appData.gift_ticket_price || 10.00; 
             tg.showConfirm(`Buy 1 Gift Ticket for P${giftTicketPrice.toFixed(2)}?`, async (ok) => { 
                 if(ok){ 
+                    document.getElementById('loading').style.display = 'flex'; 
                     try { 
-                        await callApi('/buy_ticket', 'POST', {});
+                        const url = `${API_BASE_URL}/buy_ticket`;
+                        const response = await fetch(url, { 
+                            method: 'POST', 
+                            headers: {'Content-Type': 'application/json'}, 
+                            body: JSON.stringify({ user_id: user.id, _auth: initData }) 
+                        }); 
+                        if (!response.ok) { 
+                            const errorData = await response.json(); 
+                            throw new Error(errorData.detail || 'Purchase failed.'); 
+                        } 
                         tg.showAlert("Success! You received 1 Gift Ticket."); 
-                        fetchInitialDataAndRender(); 
+                        fetchInitialData(); 
                     } catch(e) { 
                         console.error("Buy ticket error:", e);
+                        tg.showAlert(e.message); 
+                    } finally { 
+                        document.getElementById('loading').style.display = 'none'; 
                     } 
                 } 
             }); 
@@ -1582,28 +1400,27 @@
                 return;
             }
 
+            document.getElementById('loading').style.display = 'flex'; 
             try { 
-                await callApi('/gift_money', 'POST', { recipient_id: parseInt(recipient_id), amount });
+                const url = `${API_BASE_URL}/gift_money`;
+                const response = await fetch(url, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ user_id: user.id, _auth: initData, recipient_id: parseInt(recipient_id), amount }) 
+                }); 
+                if (!response.ok) { 
+                    const errorData = await response.json(); 
+                    throw new Error(errorData.detail || 'Gifting failed.'); 
+                } 
                 tg.showAlert("Gift sent successfully!"); 
-                fetchInitialDataAndRender(); 
+                fetchInitialData(); 
                 document.getElementById('giftForm').reset(); 
             } catch(e) { 
                 console.error("Send gift error:", e);
+                tg.showAlert(e.message); 
+            } finally { 
+                document.getElementById('loading').style.display = 'none'; 
             } 
-        });
-
-        document.getElementById('createGameRoomForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            createGameRoom();
-        });
-
-        document.getElementById('refreshRoomsBtn').addEventListener('click', fetchAvailableRooms);
-        document.getElementById('leaveGameBtn').addEventListener('click', leaveGame);
-
-        document.querySelectorAll('#gamePlayArea .move-buttons button').forEach(button => {
-            button.addEventListener('click', (e) => {
-                makeGameMove(e.target.dataset.move);
-            });
         });
 
         document.getElementById('markAllReadBtn').addEventListener('click', markAllNotificationsAsRead);
