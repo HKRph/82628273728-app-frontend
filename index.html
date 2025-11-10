@@ -33,13 +33,25 @@
             --pixel-input-text: #000000; /* Dark text for the special input */
             --notification-success-bg: #004d40; /* Dark green for approved notifications */
             --notification-danger-bg: #b71c1c; /* Dark red for rejected notifications */
+            --notification-info-bg: #1a237e; /* Dark blue for general info (e.g., invites, gifts) */
             --notification-text-color: #ffffff; /* White text for notifications */
+            --notification-badge-bg: #ff0000; /* Red badge for unread notifications */
+            --notification-badge-text: #ffffff;
         }
         
         /* Keyframe Animations */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes toastIn { from { opacity: 0; bottom: 60px; } to { opacity: 1; bottom: 80px; } }
         @keyframes toastOut { to { opacity: 0; bottom: 60px; } }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         
         /* Base Body Styles */
         body { 
@@ -67,15 +79,94 @@
             background: var(--tg-secondary-bg); 
             padding: 15px; 
             margin-bottom: 15px; 
+            box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.1); /* Subtle inner shadow for depth */
         }
         
         /* Header Styling */
-        .header h1 { font-size: 28px; margin: 0 0 10px 0; } 
-        .header p { font-size: 18px; color: var(--tg-hint); margin: 0; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 5px 0; 
+            border-bottom: 2px solid var(--pixel-border-light); /* Separator */
+            margin-left: -10px; /* Adjust for body padding */
+            margin-right: -10px; /* Adjust for body padding */
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        .header .app-title-tagline {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .header .app-title-tagline h1 { 
+            font-size: 28px; 
+            margin: 0; 
+            margin-bottom: 2px; /* Reduced space below title */
+            color: var(--tg-text);
+        } 
+        .header .app-title-tagline p { 
+            font-size: 16px; /* Slightly smaller for tagline */
+            color: var(--tg-hint); 
+            margin: 0; 
+        }
+
+        .header .top-right-nav {
+            display: flex;
+            gap: 15px; 
+            align-items: center;
+        }
+        .header-icon-button {
+            background: none;
+            border: none;
+            color: var(--tg-text);
+            font-family: 'VT323', monospace; 
+            font-size: 24px; 
+            cursor: pointer;
+            padding: 5px; 
+            position: relative; 
+            filter: drop-shadow(0 0 2px var(--tg-text)); 
+            transition: all 0.1s ease-in-out;
+        }
+        .header-icon-button:hover {
+            filter: drop-shadow(0 0 5px var(--tg-button)); 
+            transform: translateY(-2px); 
+        }
+        .header-icon-button:active {
+            transform: scale(0.95) translateY(0); 
+            filter: drop-shadow(0 0 1px var(--tg-hint)); 
+        }
+        .header-icon-button.active-header-nav { /* Style for active header nav item */
+            filter: drop-shadow(0 0 5px var(--tg-button));
+            color: var(--tg-button); /* Highlight color */
+            transform: translateY(-1px);
+        }
+        .header-icon-button .notification-badge {
+            position: absolute;
+            top: -8px; 
+            right: -8px; 
+            background-color: var(--notification-badge-bg);
+            color: var(--notification-badge-text);
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 18px;
+            text-align: center;
+            box-sizing: border-box;
+            display: none; 
+            border: 1px solid var(--notification-badge-text); 
+            animation: pulse 1.5s infinite; /* Pulsing effect for unread */
+        }
         
         /* Balance Card Specifics */
         .balance-card h2 { margin: 0 0 10px 0; font-size: 18px; color: var(--tg-hint); } 
-        .balance-card .balance-amount { font-size: 42px; color: var(--accent-yellow); }
+        .balance-card .balance-amount { 
+            font-size: 42px; 
+            color: var(--accent-yellow); 
+            text-shadow: 2px 2px 0px var(--pixel-border-dark); 
+        }
         
         /* List Styles (Tasks, Withdrawals, Notifications) */
         .list { list-style: none; padding: 0; margin: 0; }
@@ -86,8 +177,9 @@
             background: var(--tg-bg); 
             padding: 15px; 
             margin-bottom: 15px; 
+            box-shadow: 1px 1px 0px 0px rgba(0,0,0,0.1); 
         }
-        .list-item h3 { margin: 0 0 8px 0; font-size: 20px; } 
+        .list-item h3 { margin: 0 0 8px 0; font-size: 20px; color: var(--tg-text); } 
         .list-item p { margin: 0 0 12px 0; font-size: 16px; color: var(--tg-hint); }
         
         /* Button Styling */
@@ -102,23 +194,31 @@
             font-family: 'VT323', monospace; 
             cursor: pointer; 
             text-align: center; 
-            text-decoration: none; /* For anchor tags used as buttons */
-            display: block; /* Make anchor tags behave like block buttons */
-            width: 100%; /* Default to full width */
+            text-decoration: none; 
+            display: block; 
+            width: 100%; 
             box-sizing: border-box;
-            -webkit-appearance: none; /* Remove default button styling */
+            -webkit-appearance: none; 
             -moz-appearance: none;
             appearance: none;
+            transition: all 0.05s linear; 
         } 
-        .button:active { 
-            border-color: var(--pixel-border-light); /* Invert border colors on click */
+        .button:hover:not(.disabled) {
+            filter: brightness(1.1); 
+            box-shadow: 2px 2px 0px 0px rgba(0,0,0,0.2); 
+        }
+        .button:active:not(.disabled) { 
+            border-color: var(--pixel-border-light); 
             border-right-color: var(--pixel-border-dark); 
             border-bottom-color: var(--pixel-border-dark); 
+            transform: translateY(1px) translateX(1px); 
+            box-shadow: none;
         }
         .button.disabled { 
             background-color: var(--tg-hint); 
             cursor: not-allowed; 
             opacity: 0.7; 
+            filter: grayscale(0.5); 
         }
 
         /* Stats Grid */
@@ -130,8 +230,9 @@
             background: var(--tg-bg); 
             padding: 15px; 
             text-align: center; 
+            box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.1);
         } 
-        .stat-card .value { font-size: 28px; } 
+        .stat-card .value { font-size: 28px; color: var(--accent-yellow); } 
         .stat-card .label { font-size: 16px; color: var(--tg-hint); }
         
         /* Bottom Navigation Bar */
@@ -145,6 +246,7 @@
             border-top: 3px solid var(--pixel-border-light); 
             padding: 5px 0; 
             z-index: 100; 
+            justify-content: space-around; 
         }
         .nav-item { 
             flex: 1; 
@@ -153,6 +255,7 @@
             cursor: pointer; 
             padding: 5px 0; 
             transition: color 0.2s;
+            max-width: 100px; 
         }
         .nav-item .icon { font-size: 24px; } 
         .nav-item .label { font-size: 12px; }
@@ -165,12 +268,25 @@
             width: 100%; height: 100%; 
             background: rgba(0,0,0,0.7); 
             display: flex; 
+            flex-direction: column; 
             align-items: center; 
             justify-content: center; 
             z-index: 9999; 
             font-size: 24px; 
-            color: white; /* Ensure text is visible */
+            color: white; 
             display: none; 
+        }
+        .loading-overlay::after { 
+            content: '';
+            display: block;
+            width: 32px;
+            height: 32px;
+            border: 4px solid #fff;
+            border-top-color: var(--accent-yellow);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-top: 10px;
+            image-rendering: pixelated; 
         }
         
         /* Modal Overlay */
@@ -183,6 +299,7 @@
             align-items: center; 
             justify-content: center; 
             z-index: 1000; 
+            animation: fadeIn 0.3s forwards;
         }
         .modal-content { 
             border: 3px solid var(--pixel-border-dark); 
@@ -193,12 +310,14 @@
             width: 90%; 
             max-width: 400px; 
             box-sizing: border-box;
+            box-shadow: 5px 5px 0px 0px rgba(0,0,0,0.3); 
+            animation: fadeIn 0.3s forwards;
         }
         
         /* Form Group Styling */
         .form-group { margin-bottom: 15px; } 
-        .form-group label { display: block; font-size: 18px; margin-bottom: 8px; } 
-        .form-group input, .form-group textarea { 
+        .form-group label { display: block; font-size: 18px; margin-bottom: 8px; color: var(--tg-text); } 
+        .form-group input, .form-group textarea, .form-group select { 
             width: 100%; 
             padding: 10px; 
             font-size: 18px; 
@@ -207,9 +326,15 @@
             background-color: var(--tg-bg); 
             color: var(--tg-text); 
             box-sizing: border-box; 
-            -webkit-appearance: none; /* Remove default styling for inputs */
+            -webkit-appearance: none; 
             -moz-appearance: none;
             appearance: none;
+            box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.2); 
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--tg-button); 
+            box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.2), 0 0 5px rgba(66, 165, 245, 0.5); 
         }
         
         /* Toast Notification */
@@ -223,8 +348,9 @@
             z-index: 2000; 
             border: 3px solid var(--pixel-border-light); 
             font-size: 18px; 
-            animation: toastIn 0.3s forwards, toastOut 0.3s 2.2s forwards; /* Use forwards to keep last state */
-            white-space: nowrap; /* Prevent message wrapping */
+            animation: toastIn 0.3s forwards, toastOut 0.3s 2.2s forwards; 
+            white-space: nowrap; 
+            box-shadow: 3px 3px 0px 0px rgba(0,0,0,0.3);
         }
         
         /* Withdrawal Item Status Colors */
@@ -237,16 +363,31 @@
         .notification-item.status-approved {
             background-color: var(--notification-success-bg);
             color: var(--notification-text-color);
+            border-color: var(--accent-green);
         }
         .notification-item.status-rejected {
             background-color: var(--notification-danger-bg);
             color: var(--notification-text-color);
+            border-color: var(--accent-red);
+        }
+        .notification-item.status-info { /* For invites, gifts received */
+            background-color: var(--notification-info-bg);
+            color: var(--notification-text-color);
+            border-color: var(--tg-button);
         }
         .notification-item h3 {
-            color: var(--notification-text-color); /* Ensure heading color matches */
+            color: var(--notification-text-color); 
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.3);
         }
         .notification-item p {
-            color: rgba(255, 255, 255, 0.8); /* Slightly faded text for details */
+            color: rgba(255, 255, 255, 0.8); 
+            margin-bottom: 5px;
+        }
+        .notification-item .reason {
+            font-size: 14px;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
         }
         .notification-item .date {
             font-size: 12px;
@@ -255,8 +396,20 @@
         }
         
         /* Daily Bonus Card Specifics */
-        .daily-bonus-card .progress-bar { height: 10px; background-color: var(--tg-bg); border: 2px solid var(--pixel-border-dark); margin-top: 10px; }
-        .daily-bonus-card .progress-fill { height: 100%; width: 0%; background-color: var(--accent-green); transition: width 0.5s ease-in-out; }
+        .daily-bonus-card .progress-bar { 
+            height: 10px; 
+            background-color: var(--tg-bg); 
+            border: 2px solid var(--pixel-border-dark); 
+            margin-top: 10px; 
+            box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.2);
+        }
+        .daily-bonus-card .progress-fill { 
+            height: 100%; 
+            width: 0%; 
+            background-color: var(--accent-green); 
+            transition: width 0.5s ease-in-out; 
+            box-shadow: inset -1px -1px 0px 0px rgba(0,0,0,0.2);
+        }
         
         /* Task Milestone Card Specifics */
         .task-milestone-card .milestone-item { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 16px; }
@@ -277,6 +430,7 @@
             -webkit-appearance: none; 
             -moz-appearance: none;
             appearance: none;
+            transition: all 0.05s linear;
         } 
         .method-selector button.selected { 
             background-color: var(--tg-text); 
@@ -285,6 +439,13 @@
             border-bottom-color: var(--pixel-border-dark);
             border-left-color: var(--pixel-border-light);
             border-top-color: var(--pixel-border-light);
+            box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.2);
+        }
+        .method-selector button:active {
+            border-color: var(--pixel-border-light);
+            border-right-color: var(--pixel-border-dark);
+            border-bottom-color: var(--pixel-border-dark);
+            transform: translateY(1px) translateX(1px);
         }
 
         /* Withdrawal Maintenance Overlay */
@@ -301,10 +462,10 @@
             color: white; 
             text-align: center; 
             font-size: 20px; 
-            display: none; /* Hidden by default */
+            display: none; 
         }
 
-        /* Redeem Code UI - Ultimate Fix (Improved) */
+        /* Redeem Code UI - Improved */
         .redeem-code-container h3 {
             margin-top: 0;
             margin-bottom: 10px; 
@@ -348,22 +509,25 @@
             -moz-appearance: none;
             appearance: none;
         }
+        .pixel-input-recessed:focus {
+            border-color: var(--tg-button); 
+            border-right-color: var(--pixel-border-dark);
+            border-bottom-color: var(--pixel-border-dark);
+            box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.2), 0 0 5px rgba(66, 165, 245, 0.5);
+        }
 
-        .redeem-code-input-wrapper .button-inline { /* Custom class for inline button */
+        .redeem-code-input-wrapper .button-inline { 
             width: auto; 
             padding: 10px 15px; 
             flex-shrink: 0; 
             display: inline-block; 
-            /* Match standard button raised effect */
             border: 3px solid var(--pixel-border-dark); 
             border-right-color: var(--pixel-border-light); 
             border-bottom-color: var(--pixel-border-light);
-            /* Connect seamlessly with input */
-            border-left: none; /* Remove left border as input's right border acts as separator */
-            margin-left: -3px; /* Overlap to remove visual gap and share the dark border */
-            position: relative; /* Ensure it layers correctly */
-            z-index: 1; /* Bring button to front if any overlap issues */
-            /* Inherit button styles */
+            border-left: none; 
+            margin-left: -3px; 
+            position: relative; 
+            z-index: 1; 
             background: var(--tg-button); 
             color: var(--tg-button-text); 
             font-size: 18px; 
@@ -375,15 +539,93 @@
             -webkit-appearance: none; 
             -moz-appearance: none;
             appearance: none;
+            transition: all 0.05s linear;
         }
 
-        /* Ensure .button-inline:active works correctly */
-        .redeem-code-input-wrapper .button-inline:active {
-            /* Invert border colors for pressed effect, maintaining dark left border for connection */
+        .redeem-code-input-wrapper .button-inline:hover:not(.disabled) {
+            filter: brightness(1.1);
+            box-shadow: 2px 2px 0px 0px rgba(0,0,0,0.2);
+        }
+        .redeem-code-input-wrapper .button-inline:active:not(.disabled) {
             border-color: var(--pixel-border-light);
             border-right-color: var(--pixel-border-dark);
             border-bottom-color: var(--pixel-border-dark);
-            border-left-color: var(--pixel-border-dark); /* Keep left border dark for connection */
+            border-left-color: var(--pixel-border-dark); 
+            transform: translateY(1px) translateX(1px);
+            box-shadow: none;
+        }
+        
+        /* Game Specific Styles */
+        .game-room-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 15px;
+            background: var(--tg-bg);
+            border: 3px solid var(--pixel-border-dark);
+            border-right-color: var(--pixel-border-light);
+            border-bottom-color: var(--pixel-border-light);
+        }
+        .game-room-item .game-info {
+            flex-grow: 1;
+        }
+        .game-room-item .game-info h3 {
+            margin: 0 0 5px 0;
+            color: var(--tg-text);
+        }
+        .game-room-item .game-info p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--tg-hint);
+        }
+        .game-room-item .join-button {
+            margin-left: 15px;
+            width: auto;
+            padding: 8px 15px;
+            font-size: 16px;
+        }
+        .game-play-area {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .game-play-area .move-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .game-play-area .move-buttons button {
+            width: 80px;
+            height: 80px;
+            font-size: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--tg-secondary-bg);
+            color: var(--tg-text);
+            border: 3px solid var(--pixel-border-dark);
+            border-right-color: var(--pixel-border-light);
+            border-bottom-color: var(--pixel-border-light);
+        }
+        .game-play-area .move-buttons button:active {
+            border-color: var(--pixel-border-light);
+            border-right-color: var(--pixel-border-dark);
+            border-bottom-color: var(--pixel-border-dark);
+            transform: translateY(1px) translateX(1px);
+        }
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            font-size: 20px;
+            color: var(--tg-text);
+        }
+        .game-result-message {
+            margin-top: 20px;
+            font-size: 24px;
+            color: var(--accent-yellow);
+            text-shadow: 2px 2px 0px var(--pixel-border-dark);
         }
 
     </style>
@@ -395,7 +637,20 @@
 
     <!-- Home View -->
     <div id="homeView" class="app-view active">
-        <div class="header"> <h1 id="welcome-message">Xewee</h1> <p>Your Pixel Quest for Rewards!</p> </div>
+        <div class="header"> 
+            <div class="app-title-tagline">
+                <h1 id="welcome-message">Xewee</h1> 
+                <p>Your Pixel Quest for Rewards!</p> 
+            </div>
+            <div class="top-right-nav">
+                <button type="button" class="header-icon-button" onclick="showView('notificationsView')">
+                    🔔<span id="unreadNotifications" class="notification-badge" style="display:none;">0</span>
+                </button>
+                <button type="button" class="header-icon-button" onclick="showView('profileView')">
+                    👤
+                </button>
+            </div>
+        </div>
         <div class="pixel-container balance-card"> <h2>Balance</h2> <p id="balanceAmount" class="balance-amount">P--.--</p> </div>
         <div class="pixel-container daily-bonus-card">
             <h3>Daily Login Bonus</h3>
@@ -450,9 +705,63 @@
         </div>
     </div>
 
+    <!-- Games View (NEW FEATURE) -->
+    <div id="gamesView" class="app-view">
+        <div class="header"> <h1>Xewee Games</h1> </div>
+        
+        <div class="pixel-container">
+            <h3>Create Game Room (Jack N Poy)</h3>
+            <form id="createGameRoomForm">
+                <div class="form-group">
+                    <label for="gameBetAmount">Bet Amount</label>
+                    <input type="number" id="gameBetAmount" placeholder="e.g., 50.00" min="10" required>
+                </div>
+                <div class="form-group">
+                    <label for="gameRoomName">Room Name (Optional)</label>
+                    <input type="text" id="gameRoomName" placeholder="e.g., My RPS Challenge">
+                </div>
+                <button type="submit" class="button" style="background: var(--accent-green); color: var(--pixel-border-dark);">Create Room</button>
+            </form>
+        </div>
+
+        <div class="pixel-container">
+            <h3>Available Rooms</h3>
+            <button type="button" id="refreshRoomsBtn" class="button" style="margin-bottom: 15px; background: var(--tg-hint);">Refresh Rooms</button>
+            <ul id="availableRoomsList" class="list">
+                <!-- Dynamic list of available rooms will be loaded here -->
+                <li class="pixel-container"><p>No rooms available. Create one!</p></li>
+            </ul>
+        </div>
+
+        <div class="pixel-container" id="myActiveGameSection" style="display:none;">
+            <h3>My Active Game</h3>
+            <p id="activeGameStatus" style="font-size: 16px; color: var(--accent-yellow); margin-bottom: 10px;">Waiting for opponent...</p>
+            
+            <div id="gamePlayArea" style="display:none;">
+                <div class="game-stats">
+                    <span>You: <span id="playerScore">0</span></span>
+                    <span>Opponent: <span id="opponentScore">0</span></span>
+                </div>
+                <div class="game-result-message" id="gameResultMessage"></div>
+
+                <p style="margin-top: 20px;">Make your move!</p>
+                <div class="move-buttons">
+                    <button type="button" data-move="rock">✊</button>
+                    <button type="button" data-move="paper">✋</button>
+                    <button type="button" data-move="scissors">✌️</button>
+                </div>
+            </div>
+            <button type="button" id="leaveGameBtn" class="button" style="margin-top: 20px; background: var(--accent-red);">Leave Game</button>
+        </div>
+    </div>
+
+
     <!-- Notifications View -->
     <div id="notificationsView" class="app-view">
-        <div class="header"> <h1>Notifications</h1> </div>
+        <div class="header" style="justify-content: flex-start; gap: 10px;"> 
+            <h1>Notifications</h1> 
+            <button type="button" id="markAllReadBtn" class="button" style="width: auto; padding: 8px 12px; font-size: 16px; margin: 0; background: var(--pixel-border-dark); color: var(--tg-text);">Mark All As Read</button>
+        </div>
         <ul id="notificationList" class="list"></ul>
     </div>
 
@@ -512,8 +821,7 @@
         <div id="navTasks" class="nav-item" onclick="showView('tasksView')"> <div class="icon">📜</div> <div class="label">Tasks</div> </div>
         <div id="navReferral" class="nav-item" onclick="showView('referralView')"> <div class="icon">🤝</div> <div class="label">Refer</div> </div>
         <div id="navGift" class="nav-item" onclick="showView('giftView')"> <div class="icon">🎁</div> <div class="label">Gift</div> </div>
-        <div id="navNotifications" class="nav-item" onclick="showView('notificationsView')"> <div class="icon">🔔</div> <div class="label">Notifs</div> </div>
-        <div id="navProfile" class="nav-item" onclick="showView('profileView')"> <div class="icon">👤</div> <div class="label">Profile</div> </div>
+        <div id="navGames" class="nav-item" onclick="showView('gamesView')"> <div class="icon">🎮</div> <div class="label">Games</div> </div>
     </nav>
     
     <!-- Embedded JavaScript Logic -->
@@ -532,65 +840,85 @@
         document.documentElement.style.setProperty('--tg-secondary-bg', tg.themeParams.secondary_bg_color || '#303030');
 
         // --- Configuration (UPDATE THESE!) ---
-        // Normalize API_BASE_URL to ensure no trailing slash.
-        // IMPORTANT: Replace with your Railway backend URL!
-        const rawApiBaseUrl = "https://web-production-3b9f3.up.railway.app"; 
+        const rawApiBaseUrl = "https://your-xewee-backend.railway.app"; 
         const API_BASE_URL = rawApiBaseUrl.endsWith('/') ? rawApiBaseUrl.slice(0, -1) : rawApiBaseUrl; 
         
-        const BOT_USERNAME = "XeweeBot"; // *** IMPORTANT: REPLACE WITH YOUR BOT'S @USERNAME (without the @) ***
+        const BOT_USERNAME = "XeweeBot"; 
         // ------------------------------------
 
         const user = tg.initDataUnsafe.user;
         const initData = tg.initData;
 
-        let appData = {}; // Stores all initial data fetched from the backend
-        let withdrawalMethod = ''; // To track selected withdrawal method (GCash/Maya)
+        let appData = {}; 
+        let withdrawalMethod = ''; 
+        let activeGameRoomId = null; // Track if user is in a game
+        let gameUpdateInterval = null; // For polling game state
         
-        // Task Milestones (Matches backend configuration)
         const TASK_MILESTONES_UI = {10: 50.0, 20: 150.0, 30: 400.0}; 
 
         // --- Utility Functions ---
         const views = document.querySelectorAll('.app-view');
-        const navItems = document.querySelectorAll('.nav-item');
+        const bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item'); 
+        const headerNavButtons = document.querySelectorAll('.header-icon-button');
+
         function showView(viewId) { 
-            tg.HapticFeedback.impactOccurred('light'); // Haptic feedback on navigation
+            tg.HapticFeedback.impactOccurred('light'); 
+            
             views.forEach(v => v.classList.remove('active')); 
             document.getElementById(viewId).classList.add('active'); 
-            navItems.forEach(n => n.classList.remove('active')); 
-            try { 
-                document.getElementById(`nav${viewId.replace('View', '')}`).classList.add('active'); 
-            } catch (e) {
-                console.error("Error setting active nav item:", e);
-            } 
+            
+            bottomNavItems.forEach(n => n.classList.remove('active')); 
+            headerNavButtons.forEach(btn => btn.classList.remove('active-header-nav')); 
 
-            // Special handling for views that need fresh data
+            const currentBottomNavItem = document.getElementById(`nav${viewId.replace('View', '')}`);
+            if (currentBottomNavItem) {
+                currentBottomNavItem.classList.add('active'); 
+            } else if (viewId === 'notificationsView') {
+                document.querySelector('.header-icon-button:nth-child(1)').classList.add('active-header-nav');
+            } else if (viewId === 'profileView') {
+                document.querySelector('.header-icon-button:nth-child(2)').classList.add('active-header-nav');
+            }
+
+            // Trigger data fetching/rendering for specific views
             if (viewId === 'notificationsView') {
                 fetchNotifications();
+            } else if (viewId === 'homeView' || viewId === 'profileView') {
+                fetchInitialData(); 
+            } else if (viewId === 'gamesView') {
+                fetchAvailableRooms();
+                // If user is in an active game, show their game section
+                if (activeGameRoomId) {
+                    document.getElementById('myActiveGameSection').style.display = 'block';
+                    document.getElementById('gamePlayArea').style.display = 'block'; // Show game controls
+                    startGamePolling(activeGameRoomId);
+                } else {
+                    document.getElementById('myActiveGameSection').style.display = 'none';
+                    document.getElementById('gamePlayArea').style.display = 'none'; // Hide game controls
+                    stopGamePolling();
+                }
+            } else {
+                stopGamePolling(); // Stop polling if not in games view
             }
-            // You might want to re-fetch initial data for other views too, e.g., 'homeView' or 'profileView'
-            // if you need real-time updates and not just on initial load.
-            // For now, let's keep fetchInitialData() on load only, for performance.
         }
 
         function showToast(message) { 
             const existingToast = document.querySelector('.toast');
-            if(existingToast) existingToast.remove(); // Remove any existing toast
+            if(existingToast) existingToast.remove(); 
             const toast = document.createElement('div'); 
             toast.className = 'toast'; 
             toast.innerText = message; 
             document.body.appendChild(toast); 
             setTimeout(() => { 
                 toast.remove(); 
-            }, 2500); // Toast disappears after 2.5 seconds
+            }, 2500); 
         }
         
         // --- API Calls ---
         async function fetchInitialData() {
             document.getElementById('loading').style.display = 'flex';
             try {
-                // Construct URL robustly using API_BASE_URL (now guaranteed no trailing slash)
                 const url = `${API_BASE_URL}/get_initial_data`;
-                console.log("Fetching initial data from:", url); // Log the URL for debugging
+                console.log("Fetching initial data from:", url); 
                 const response = await fetch(url, { 
                     method: 'POST', 
                     headers: {'Content-Type': 'application/json'}, 
@@ -604,12 +932,12 @@
                 if(data.error) { 
                     tg.showAlert(data.detail || data.error); 
                     if(data.detail.includes("banned") || data.detail.includes("restricted")){ 
-                        tg.close(); // Close Mini App if user is banned/restricted
+                        tg.close(); 
                     } 
                     return; 
                 }
-                appData = data; // Store fetched data
-                renderAll(); // Re-render UI with new data
+                appData = data; 
+                renderAll(); 
             } catch (error) { 
                 console.error("fetchInitialData error:", error);
                 tg.showAlert(error.message || 'COULD NOT LOAD DATA. PLEASE RESTART.'); 
@@ -633,11 +961,321 @@
                 }
                 const notifications = await response.json();
                 renderNotifications(notifications);
+                
+                // Update notification badge (assuming 'is_read' field or similar in backend)
+                // For now, let's count anything not 'approved' or 'rejected' as potentially unread.
+                const unreadCount = notifications.filter(n => (n.status === 'pending' || n.type === 'referral_join' || n.type === 'gift_received')).length; 
+                const notificationBadge = document.getElementById('unreadNotifications');
+                if (unreadCount > 0) {
+                    notificationBadge.innerText = unreadCount;
+                    notificationBadge.style.display = 'block';
+                } else {
+                    notificationBadge.style.display = 'none';
+                }
+
             } catch (error) {
                 console.error("fetchNotifications error:", error);
                 tg.showAlert(error.message || 'Could not load notifications.');
             } finally {
                 document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        async function markAllNotificationsAsRead() {
+            tg.HapticFeedback.impactOccurred('light');
+            tg.showConfirm('Mark all notifications as read?', async (ok) => {
+                if (ok) {
+                    document.getElementById('loading').style.display = 'flex';
+                    try {
+                        // This endpoint needs to be implemented in main.py
+                        const url = `${API_BASE_URL}/mark_notifications_as_read`; 
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ user_id: user.id, _auth: initData })
+                        });
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.detail || 'Failed to mark notifications as read.');
+                        }
+                        showToast('All notifications marked as read!');
+                        fetchNotifications(); 
+                        document.getElementById('unreadNotifications').style.display = 'none'; 
+                    } catch (error) {
+                        console.error("Mark all as read error:", error);
+                        tg.showAlert(error.message || 'Failed to mark notifications as read.');
+                    } finally {
+                        document.getElementById('loading').style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        async function createGameRoom() {
+            const betAmount = parseFloat(document.getElementById('gameBetAmount').value);
+            const roomName = document.getElementById('gameRoomName').value.trim();
+
+            if (isNaN(betAmount) || betAmount <= 0) {
+                tg.showAlert('Please enter a valid bet amount.');
+                return;
+            }
+            if (betAmount > appData.balance) {
+                tg.showAlert('Insufficient balance to create this room.');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'flex';
+            try {
+                const url = `${API_BASE_URL}/games/create_room`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ user_id: user.id, _auth: initData, bet_amount: betAmount, room_name: roomName })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to create game room.');
+                }
+                const result = await response.json();
+                tg.showAlert(`Game room "${result.room_name}" created! Waiting for opponent.`);
+                activeGameRoomId = result.room_id;
+                document.getElementById('createGameRoomForm').reset();
+                document.getElementById('myActiveGameSection').style.display = 'block';
+                document.getElementById('activeGameStatus').innerText = `Room: ${result.room_name} (ID: ${activeGameRoomId}) - Waiting for opponent.`;
+                document.getElementById('gamePlayArea').style.display = 'none'; // Hide play area until opponent joins
+                startGamePolling(activeGameRoomId);
+                fetchInitialData(); // Refresh balance
+            } catch (error) {
+                console.error("Create room error:", error);
+                tg.showAlert(error.message || 'Could not create game room.');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        async function fetchAvailableRooms() {
+            try {
+                const url = `${API_BASE_URL}/games/list_rooms`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ user_id: user.id, _auth: initData }) // Pass user for personalized lists if needed
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to fetch available rooms.');
+                }
+                const rooms = await response.json();
+                renderAvailableRooms(rooms);
+            } catch (error) {
+                console.error("Fetch available rooms error:", error);
+                // Don't show alert for passive refresh errors unless critical
+            }
+        }
+
+        function renderAvailableRooms(rooms) {
+            const availableRoomsList = document.getElementById('availableRoomsList');
+            availableRoomsList.innerHTML = '';
+
+            if (!rooms || rooms.length === 0) {
+                availableRoomsList.innerHTML = '<li class="pixel-container"><p>No rooms available. Create one!</p></li>';
+                return;
+            }
+
+            rooms.forEach(room => {
+                // Don't show rooms where the current user is the creator
+                if (room.creator_id === user.id) return; 
+
+                const li = document.createElement('li');
+                li.className = 'list-item game-room-item';
+                li.innerHTML = `
+                    <div class="game-info">
+                        <h3>${room.room_name || `Room ID: ${room.room_id}`}</h3>
+                        <p>Bet: P${room.bet_amount.toFixed(2)}</p>
+                        <p>Creator: ${room.creator_name}</p>
+                    </div>
+                    <button type="button" class="button join-button" data-room-id="${room.room_id}" style="background: var(--accent-yellow); color: var(--pixel-border-dark);">Join</button>
+                `;
+                availableRoomsList.appendChild(li);
+            });
+
+            // Add event listeners for join buttons
+            availableRoomsList.querySelectorAll('.join-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const roomId = e.target.dataset.roomId;
+                    joinGameRoom(roomId);
+                });
+            });
+        }
+
+        async function joinGameRoom(roomId) {
+            document.getElementById('loading').style.display = 'flex';
+            try {
+                const url = `${API_BASE_URL}/games/join_room`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ user_id: user.id, _auth: initData, room_id: roomId })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to join game room.');
+                }
+                const result = await response.json();
+                tg.showAlert(`Joined room "${result.room_name}"!`);
+                activeGameRoomId = result.room_id;
+                document.getElementById('myActiveGameSection').style.display = 'block';
+                document.getElementById('activeGameStatus').innerText = `Room: ${result.room_name} (ID: ${activeGameRoomId}) - Game Started!`;
+                document.getElementById('gamePlayArea').style.display = 'block'; // Show game controls
+                startGamePolling(activeGameRoomId);
+                fetchInitialData(); // Refresh balance
+            } catch (error) {
+                console.error("Join room error:", error);
+                tg.showAlert(error.message || 'Could not join game room.');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        async function makeGameMove(move) {
+            if (!activeGameRoomId) {
+                tg.showAlert('You are not in an active game.');
+                return;
+            }
+            document.getElementById('loading').style.display = 'flex';
+            try {
+                const url = `${API_BASE_URL}/games/make_move`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ user_id: user.id, _auth: initData, room_id: activeGameRoomId, move: move })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to make move.');
+                }
+                const result = await response.json();
+                tg.HapticFeedback.impactOccurred('medium');
+                showToast(`You chose ${move.toUpperCase()}!`);
+                updateGameUI(result); // Update UI immediately after making a move
+            } catch (error) {
+                console.error("Make move error:", error);
+                tg.showAlert(error.message || 'Could not make move.');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        async function leaveGame() {
+            if (!activeGameRoomId) {
+                tg.showAlert('You are not in an active game.');
+                return;
+            }
+            tg.showConfirm('Are you sure you want to leave this game?', async (ok) => {
+                if (ok) {
+                    document.getElementById('loading').style.display = 'flex';
+                    try {
+                        const url = `${API_BASE_URL}/games/leave_room`;
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ user_id: user.id, _auth: initData, room_id: activeGameRoomId })
+                        });
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.detail || 'Failed to leave game.');
+                        }
+                        tg.showAlert('You have left the game.');
+                        activeGameRoomId = null;
+                        document.getElementById('myActiveGameSection').style.display = 'none';
+                        document.getElementById('gamePlayArea').style.display = 'none';
+                        stopGamePolling();
+                        fetchAvailableRooms(); // Refresh available rooms
+                        fetchInitialData(); // Refresh balance
+                    } catch (error) {
+                        console.error("Leave game error:", error);
+                        tg.showAlert(error.message || 'Could not leave game.');
+                    } finally {
+                        document.getElementById('loading').style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        async function fetchGameStatus() {
+            if (!activeGameRoomId) {
+                stopGamePolling();
+                return;
+            }
+            try {
+                const url = `${API_BASE_URL}/games/get_game_state`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ user_id: user.id, _auth: initData, room_id: activeGameRoomId })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    // If game state is not found or ended, clear activeGameRoomId
+                    if (response.status === 404 || errorData.detail.includes("Game ended")) {
+                        tg.showAlert(errorData.detail || "Game ended or not found.");
+                        activeGameRoomId = null;
+                        document.getElementById('myActiveGameSection').style.display = 'none';
+                        document.getElementById('gamePlayArea').style.display = 'none';
+                        stopGamePolling();
+                        fetchAvailableRooms();
+                        fetchInitialData();
+                        return;
+                    }
+                    throw new Error(errorData.detail || `Failed to fetch game state: ${response.status}`);
+                }
+                const gameData = await response.json();
+                updateGameUI(gameData);
+            } catch (error) {
+                console.error("Fetch game status error:", error);
+            }
+        }
+
+        function updateGameUI(gameData) {
+            const statusElement = document.getElementById('activeGameStatus');
+            const gamePlayArea = document.getElementById('gamePlayArea');
+            const playerScoreElement = document.getElementById('playerScore');
+            const opponentScoreElement = document.getElementById('opponentScore');
+            const gameResultMessageElement = document.getElementById('gameResultMessage');
+
+            if (gameData.status === 'waiting_for_opponent') {
+                statusElement.innerText = `Room: ${gameData.room_name} (ID: ${activeGameRoomId}) - Waiting for opponent...`;
+                gamePlayArea.style.display = 'none';
+            } else if (gameData.status === 'in_progress') {
+                statusElement.innerText = `Room: ${gameData.room_name} (ID: ${activeGameRoomId}) - Game in progress!`;
+                gamePlayArea.style.display = 'block';
+                playerScoreElement.innerText = gameData.player_score;
+                opponentScoreElement.innerText = gameData.opponent_score;
+                gameResultMessageElement.innerText = gameData.last_round_result || "Make your move!";
+            } else if (gameData.status === 'finished') {
+                statusElement.innerText = `Game Finished! Winner: ${gameData.winner_name || 'Draw'}`;
+                gamePlayArea.style.display = 'block';
+                playerScoreElement.innerText = gameData.player_score;
+                opponentScoreElement.innerText = gameData.opponent_score;
+                gameResultMessageElement.innerText = gameData.final_result_message;
+                tg.showAlert(gameData.final_result_message);
+                activeGameRoomId = null; // Game ended
+                stopGamePolling();
+                document.getElementById('myActiveGameSection').style.display = 'none';
+                fetchAvailableRooms();
+                fetchInitialData();
+            }
+        }
+
+        function startGamePolling(roomId) {
+            stopGamePolling(); // Clear any existing interval
+            gameUpdateInterval = setInterval(() => fetchGameStatus(roomId), 3000); // Poll every 3 seconds
+        }
+
+        function stopGamePolling() {
+            if (gameUpdateInterval) {
+                clearInterval(gameUpdateInterval);
+                gameUpdateInterval = null;
             }
         }
 
@@ -650,7 +1288,7 @@
             const claimBtn = document.getElementById('claimDailyBonusBtn'); 
             const dailyBonusStatus = document.getElementById('dailyBonusStatus'); 
             const dailyBonusProgress = document.getElementById('dailyBonusProgress');
-            const dailyBonusAmount = appData.daily_bonus_amount || 10.0; // Get from appData if provided, else default
+            const dailyBonusAmount = appData.daily_bonus_amount || 10.0; 
 
             if (appData.can_claim_daily) { 
                 claimBtn.classList.remove('disabled'); 
@@ -702,7 +1340,6 @@
             for (const milestoneKey in TASK_MILESTONES_UI) { 
                 const count = parseInt(milestoneKey); 
                 const reward = TASK_MILESTONES_UI[milestoneKey]; 
-                // Ensure key format matches backend (e.g., "10_tasks")
                 const backendMilestoneKey = `${count}_tasks`; 
                 const isClaimed = claimedMilestones[backendMilestoneKey]; 
                 const currentStatus = (appData.tasks_completed >= count) ? (isClaimed ? 'CLAIMED' : 'READY') : 'PENDING'; 
@@ -721,7 +1358,7 @@
             if (appData.withdrawals && appData.withdrawals.length > 0) { 
                 appData.withdrawals.forEach(w => { 
                     const item = document.createElement('li'); 
-                    item.className = 'list-item withdrawal-item'; // Added class for specific styling
+                    item.className = 'list-item withdrawal-item'; 
                     item.innerHTML = `<span>P${w.amount.toFixed(2)} (${w.method}) on ${w.date}</span><span class="status status-${w.status}">${w.status.toUpperCase()}</span>`; 
                     withdrawalList.appendChild(item); 
                 }); 
@@ -739,11 +1376,14 @@
             document.getElementById('giftTicketCount').innerText = appData.gift_tickets || 0;
             document.getElementById('buyTicketBtn').innerText = `Buy Tickets (P${(appData.gift_ticket_price || 10.00).toFixed(2)})`;
             document.querySelector('#giftView .pixel-container p').innerHTML = `Uses 1 Ticket. A ${((appData.gift_fee_percent || 0.05)*100).toFixed(0)}% fee applies to the sent amount from your balance. Min: P${(appData.gift_min_amount || 30.00).toFixed(2)}`;
+
+            // Initial fetch for notifications when app data is loaded
+            fetchNotifications();
         }
 
         function renderNotifications(notifications) {
             const notificationList = document.getElementById('notificationList');
-            notificationList.innerHTML = ''; // Clear previous notifications
+            notificationList.innerHTML = ''; 
 
             if (!notifications || notifications.length === 0) {
                 notificationList.innerHTML = '<li class="pixel-container"><p>No new notifications.</p></li>';
@@ -752,32 +1392,51 @@
 
             notifications.forEach(notif => {
                 const li = document.createElement('li');
-                li.className = `list-item notification-item status-${notif.status}`;
+                let statusClass = `status-${notif.status}`;
+                if (notif.type === 'referral_join' || notif.type === 'gift_received') {
+                    statusClass = 'status-info'; // Use info style for these types
+                }
+                li.className = `list-item notification-item ${statusClass}`;
                 
                 let detailsHtml = '';
+                let title = '';
+
                 if (notif.type === 'task_submission') {
+                    title = `Task: ${notif.description}`;
                     detailsHtml = `
-                        <h3>Task: ${notif.description}</h3>
                         <p>Reward: P${notif.reward.toFixed(2)}</p>
                     `;
                 } else if (notif.type === 'withdrawal') {
+                    title = `Withdrawal: P${notif.amount.toFixed(2)}`;
                     detailsHtml = `
-                        <h3>Withdrawal: P${notif.amount.toFixed(2)}</h3>
                         <p>Method: ${notif.method}</p>
+                    `;
+                } else if (notif.type === 'referral_join') {
+                    title = `New Friend Joined!`;
+                    detailsHtml = `
+                        <p>User: ${notif.friend_name} (${notif.friend_id})</p>
+                        <p>Encourage them to complete tasks to earn!</p>
+                    `;
+                } else if (notif.type === 'gift_received') {
+                    title = `Gift Received!`;
+                    detailsHtml = `
+                        <p>From: User ${notif.sender_id}</p>
+                        <p>Amount: P${notif.amount.toFixed(2)}</p>
                     `;
                 }
 
                 if (notif.status === 'rejected' && notif.reason) {
-                    detailsHtml += `<p>Reason: ${notif.reason}</p>`;
+                    detailsHtml += `<p class="reason">Reason: ${notif.reason}</p>`;
                 }
                 
                 li.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <div>
+                            <h3>${title}</h3>
                             ${detailsHtml}
                             <div class="date">${new Date(notif.date).toLocaleDateString()}</div>
                         </div>
-                        <span class="status status-${notif.status}">${notif.status.toUpperCase()}</span>
+                        <span class="status ${statusClass}" style="flex-shrink: 0; margin-left: 10px;">${notif.status.toUpperCase()}</span>
                     </div>
                 `;
                 notificationList.appendChild(li);
@@ -785,14 +1444,12 @@
         }
         
         // --- Event Listeners ---
-        window.addEventListener('load', fetchInitialData); // Fetch data when page loads
+        window.addEventListener('load', fetchInitialData); 
 
-        // Set welcome message if user name is available
         if (user && user.first_name) {
              document.getElementById('welcome-message').innerText = `Hey, ${user.first_name}!`;
         }
 
-        // Copy Referral Link
         document.getElementById('copyLinkBtn').addEventListener('click', () => { 
             navigator.clipboard.writeText(document.getElementById('referralLink').innerText).then(() => { 
                 tg.HapticFeedback.notificationOccurred('success'); 
@@ -803,7 +1460,6 @@
             }); 
         });
 
-        // Claim Daily Bonus
         document.getElementById('claimDailyBonusBtn').addEventListener('click', async () => { 
             if (document.getElementById('claimDailyBonusBtn').classList.contains('disabled')) { 
                 tg.showAlert("You must meet the invite requirements or wait until tomorrow to claim."); 
@@ -821,8 +1477,8 @@
                     const errorData = await response.json(); 
                     throw new Error(errorData.detail || 'Failed to claim bonus.'); 
                 } 
-                tg.showAlert(`P${(appData.daily_bonus_amount || 10.0).toFixed(2)} has been added to your balance!`); // Use appData for amount
-                fetchInitialData(); // Refresh data
+                tg.showAlert(`P${(appData.daily_bonus_amount || 10.0).toFixed(2)} has been added to your balance!`); 
+                fetchInitialData(); 
             } catch (error) { 
                 console.error("Claim daily bonus error:", error);
                 tg.showAlert(error.message || 'Could not claim daily bonus.'); 
@@ -831,9 +1487,8 @@
             } 
         });
 
-        // Task Submission Modal Handling
         const taskModal = document.getElementById('taskModal'); 
-        let currentTaskId = null; // Store the ID of the task being submitted
+        let currentTaskId = null; 
 
         document.getElementById('taskList').addEventListener('click', e => { 
             if (e.target.classList.contains('submit-proof-btn')) { 
@@ -848,14 +1503,13 @@
 
         document.getElementById('cancelSubmitBtn').addEventListener('click', () => { 
             taskModal.style.display = 'none'; 
-            document.getElementById('taskProofForm').reset(); // Clear form
+            document.getElementById('taskProofForm').reset(); 
         });
 
         taskModal.addEventListener('click', (e) => { 
-            // Close modal if clicking outside content
             if (e.target === taskModal) {
                 taskModal.style.display = 'none'; 
-                document.getElementById('taskProofForm').reset(); // Clear form
+                document.getElementById('taskProofForm').reset(); 
             }
         });
 
@@ -887,8 +1541,8 @@
                     } 
                     tg.showAlert('Proof submitted for review!'); 
                     taskModal.style.display = 'none'; 
-                    document.getElementById('taskProofForm').reset(); // Clear form
-                    fetchInitialData(); // Refresh data
+                    document.getElementById('taskProofForm').reset(); 
+                    fetchInitialData(); 
                 } catch (error) { 
                     console.error("Task submission error:", error);
                     tg.showAlert(error.message || 'Submission failed.'); 
@@ -902,9 +1556,8 @@
             }; 
         });
 
-        // Redeem Code
         document.getElementById('redeemCodeBtn').addEventListener('click', async () => { 
-            const code = document.getElementById('redeemCodeInput').value.trim(); // Trim whitespace
+            const code = document.getElementById('redeemCodeInput').value.trim(); 
             if (!code) { 
                 showToast('Please enter a code.');
                 return; 
@@ -923,8 +1576,8 @@
                 } 
                 const result = await response.json(); 
                 tg.showAlert(`Success! P${result.amount_rewarded.toFixed(2)} added to your balance.`); 
-                document.getElementById('redeemCodeInput').value = ''; // Clear input
-                fetchInitialData(); // Refresh data
+                document.getElementById('redeemCodeInput').value = ''; 
+                fetchInitialData(); 
             } catch (error) { 
                 console.error("Redeem code error:", error);
                 tg.showAlert(error.message || 'Invalid code.'); 
@@ -933,7 +1586,6 @@
             } 
         });
 
-        // Withdrawal Method Selection
         document.getElementById('gcashBtn').addEventListener('click', () => { 
             withdrawalMethod = 'GCash'; 
             document.getElementById('gcashBtn').classList.add('selected'); 
@@ -947,7 +1599,6 @@
             document.getElementById('withdrawDetails').placeholder = "Your Maya number";
         });
 
-        // Submit Withdrawal Request
         document.getElementById('withdrawForm').addEventListener('submit', async function(e) { 
             e.preventDefault(); 
             if (appData.withdrawal_maintenance) { 
@@ -999,7 +1650,7 @@
                 withdrawalMethod = ''; 
                 document.getElementById('gcashBtn').classList.remove('selected'); 
                 document.getElementById('mayaBtn').classList.remove('selected'); 
-                document.getElementById('withdrawalFeeText').style.display = 'none'; // Hide fee text
+                document.getElementById('withdrawalFeeText').style.display = 'none'; 
             } catch (error) { 
                 console.error("Submit withdrawal error:", error);
                 tg.showAlert(error.message || 'Withdrawal failed. Please try again.'); 
@@ -1008,7 +1659,6 @@
             } 
         });
 
-        // Calculate and display withdrawal fee
         document.getElementById('withdrawAmount').addEventListener('input', (e) => { 
             const amount = parseFloat(e.target.value) || 0; 
             const fee = amount * (appData.withdrawal_fee_percent || 0.03); 
@@ -1021,9 +1671,8 @@
             } 
         });
 
-        // Buy Gift Tickets
         document.getElementById('buyTicketBtn').addEventListener('click', async () => { 
-            const giftTicketPrice = appData.gift_ticket_price || 10.00; // Use 10.00 as default
+            const giftTicketPrice = appData.gift_ticket_price || 10.00; 
             tg.showConfirm(`Buy 1 Gift Ticket for P${giftTicketPrice.toFixed(2)}?`, async (ok) => { 
                 if(ok){ 
                     document.getElementById('loading').style.display = 'flex'; 
@@ -1050,13 +1699,12 @@
             }); 
         });
 
-        // Send Gift Money
         document.getElementById('giftForm').addEventListener('submit', async function(e) { 
             e.preventDefault(); 
             const recipient_id = document.getElementById('giftRecipientId').value.trim(); 
             const amount = parseFloat(document.getElementById('giftAmount').value); 
             
-            const giftMinAmount = appData.gift_min_amount || 30.00; // Use 30.00 as default
+            const giftMinAmount = appData.gift_min_amount || 30.00; 
             const giftMaxAmount = appData.gift_max_amount || 80000;
             const giftFeePercent = appData.gift_fee_percent || 0.05;
 
@@ -1095,6 +1743,24 @@
                 document.getElementById('loading').style.display = 'none'; 
             } 
         });
+
+        // Game specific event listeners
+        document.getElementById('createGameRoomForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            createGameRoom();
+        });
+
+        document.getElementById('refreshRoomsBtn').addEventListener('click', fetchAvailableRooms);
+        document.getElementById('leaveGameBtn').addEventListener('click', leaveGame);
+
+        document.querySelectorAll('#gamePlayArea .move-buttons button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                makeGameMove(e.target.dataset.move);
+            });
+        });
+
+        // Initial fetch for available rooms when Games view is first accessed
+        // This is now handled by showView('gamesView')
     </script>
 </body>
 </html>
