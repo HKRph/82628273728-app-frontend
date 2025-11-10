@@ -787,7 +787,7 @@
             <button type="button" class="button" onclick="openGameRulesModal()" style="width: auto; padding: 8px 12px; font-size: 16px; margin-left: auto;">Rules</button>
         </div>
         
-        <div class="pixel-container">
+        <div class="pixel-container" id="createGameRoomContainer">
             <h3>Create Game Room (Jack N Poy)</h3>
             <form id="createGameRoomForm">
                 <div class="form-group">
@@ -802,7 +802,7 @@
             </form>
         </div>
 
-        <div class="pixel-container">
+        <div class="pixel-container" id="availableRoomsContainer">
             <h3>Available Rooms</h3>
             <button type="button" id="refreshRoomsBtn" class="button" style="margin-bottom: 15px; background: var(--tg-hint);">Refresh Rooms</button>
             <ul id="availableRoomsList" class="list">
@@ -942,7 +942,7 @@
         document.documentElement.style.setProperty('--tg-secondary-bg', tg.themeParams.secondary_bg_color || '#303030');
 
         // --- Configuration (UPDATE THESE!) ---
-        const rawApiBaseUrl = "https://web-production-078c8.up.railway.app"; 
+        const rawApiBaseUrl = "https://web-production-078c8.up.railway.app/"; 
         const API_BASE_URL = rawApiBaseUrl.endsWith('/') ? rawApiBaseUrl.slice(0, -1) : rawApiBaseUrl; 
         
         const BOT_USERNAME = "XeweeBot"; 
@@ -1170,7 +1170,6 @@
         }
         
         // --- Navigation Logic ---
-        const views = document.querySelectorAll('.app-view');
         const bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item'); 
         const headerNotifBtn = document.getElementById('headerNotifBtn');
         const headerProfileBtn = document.getElementById('headerProfileBtn');
@@ -1179,13 +1178,16 @@
         function showView(viewId) { 
             tg.HapticFeedback.impactOccurred('light'); 
             
+            // Hide all views, then show the active one
             views.forEach(v => v.classList.remove('active')); 
             document.getElementById(viewId).classList.add('active'); 
             
+            // Remove 'active' from all bottom nav items and header buttons
             bottomNavItems.forEach(n => n.classList.remove('active')); 
             headerNotifBtn.classList.remove('active-header-nav');
             headerProfileBtn.classList.remove('active-header-nav');
 
+            // Set active class for the current view
             const currentBottomNavItem = document.getElementById(`nav${viewId.replace('View', '')}`);
             if (currentBottomNavItem) {
                 currentBottomNavItem.classList.add('active'); 
@@ -1200,13 +1202,18 @@
             } else if (viewId === 'homeView' || viewId === 'profileView') {
                 fetchInitialData(); 
             } else if (viewId === 'gamesView') {
+                // When entering games view, always try to refresh list of rooms
                 fetchAvailableRooms();
-                // Ensure active game section is shown/hidden correctly
+                // Check if user is already in a game, then show appropriate section
                 if (activeGameRoomId) {
+                    document.getElementById('createGameRoomContainer').style.display = 'none';
+                    document.getElementById('availableRoomsContainer').style.display = 'none';
                     document.getElementById('myActiveGameSection').style.display = 'block';
                     document.getElementById('gamePlayArea').style.display = 'block'; 
                     startGamePolling(activeGameRoomId);
                 } else {
+                    document.getElementById('createGameRoomContainer').style.display = 'block';
+                    document.getElementById('availableRoomsContainer').style.display = 'block';
                     document.getElementById('myActiveGameSection').style.display = 'none';
                     document.getElementById('gamePlayArea').style.display = 'none'; 
                     stopGamePolling(); 
@@ -1243,15 +1250,18 @@
                 appData = data; 
                 if (appData.active_game_room_id) {
                     activeGameRoomId = appData.active_game_room_id;
+                    // If we're on the games view, ensure UI is updated
                     if (document.getElementById('gamesView').classList.contains('active')) {
-                        document.getElementById('myActiveGameSection').style.display = 'block';
-                        document.getElementById('gamePlayArea').style.display = 'block'; 
+                        // This logic is now handled in showView('gamesView') for consistency
+                        // document.getElementById('myActiveGameSection').style.display = 'block';
+                        // document.getElementById('gamePlayArea').style.display = 'block'; 
                         startGamePolling(activeGameRoomId);
                     }
                 } else {
                     activeGameRoomId = null;
                     stopGamePolling();
-                    document.getElementById('myActiveGameSection').style.display = 'none';
+                    // This is also handled in showView('gamesView')
+                    // document.getElementById('myActiveGameSection').style.display = 'none';
                 }
                 renderAll(); 
             } catch (error) { 
@@ -1352,8 +1362,9 @@
                 tg.showAlert(`Game room "${result.room_name || 'Unnamed Room'}" created! Waiting for opponent.`);
                 activeGameRoomId = result.room_id;
                 document.getElementById('createGameRoomForm').reset();
-                showView('gamesView'); 
-                fetchInitialData(); 
+                showView('gamesView'); // Redirect to games view immediately
+                // The showView('gamesView') will trigger fetchAvailableRooms and startGamePolling
+                fetchInitialData(); // Refresh balance
             } catch (error) {
                 console.error("Create room error:", error);
                 tg.showAlert(error.message || 'Could not create game room.');
@@ -1363,6 +1374,17 @@
         }
 
         async function fetchAvailableRooms() {
+            // Hide available rooms if user is in an active game
+            if (activeGameRoomId) {
+                document.getElementById('availableRoomsContainer').style.display = 'none';
+                return;
+            } else {
+                document.getElementById('availableRoomsContainer').style.display = 'block';
+            }
+
+            const availableRoomsList = document.getElementById('availableRoomsList');
+            availableRoomsList.innerHTML = '<li class="pixel-container"><p>Loading available rooms...</p></li>';
+
             try {
                 const url = `${API_BASE_URL}/games/list_rooms`;
                 const response = await fetch(url, {
@@ -1378,6 +1400,7 @@
                 renderAvailableRooms(rooms);
             } catch (error) {
                 console.error("Fetch available rooms error:", error);
+                availableRoomsList.innerHTML = '<li class="pixel-container"><p>Failed to load rooms.</p></li>';
             }
         }
 
