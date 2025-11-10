@@ -1117,13 +1117,6 @@
             });
         }
 
-        const MOVE_EMOJIS = {
-            'rock': '✊',
-            'paper': '✋',
-            'scissors': '✌️',
-            'none': '' 
-        };
-
         function updateGameUI(gameData) {
             const statusElement = document.getElementById('activeGameStatus');
             const gamePlayArea = document.getElementById('gamePlayArea');
@@ -1209,6 +1202,19 @@
                 document.getElementById('myActiveGameSection').style.display = 'none';
                 fetchAvailableRooms();
                 fetchInitialDataAndRender(); // Refresh to update balance
+            }
+        }
+
+        // --- Game Polling Functions ---
+        function startGamePolling(roomId) {
+            stopGamePolling(); 
+            gameUpdateInterval = setInterval(() => fetchGameStatus(roomId), 3000); 
+        }
+
+        function stopGamePolling() {
+            if (gameUpdateInterval) {
+                clearInterval(gameUpdateInterval);
+                gameUpdateInterval = null;
             }
         }
 
@@ -1310,9 +1316,9 @@
             document.getElementById('buyTicketBtn').innerText = `Buy Tickets (P${(appData.gift_ticket_price || 10.00).toFixed(2)})`;
             document.querySelector('#giftView .pixel-container p').innerHTML = `Uses 1 Ticket. A ${((appData.gift_fee_percent || 0.05)*100).toFixed(0)}% fee applies to the sent amount from your balance. Min: P${(appData.gift_min_amount || 30.00).toFixed(2)}`;
 
-            // --- Games View initial state ---
-            // This will be specifically handled by showView('gamesView')
-            // No need to re-render here as fetchInitialDataAndRender calls it on load and other views manage it
+            // Call fetchNotifications only once here, as it's called again by showView for notificationsView
+            // and we want it to update the badge on initial app load.
+            fetchNotifications(); 
         }
         
         // --- Primary Data Fetching and Rendering Trigger ---
