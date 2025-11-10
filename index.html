@@ -942,7 +942,7 @@
         document.documentElement.style.setProperty('--tg-secondary-bg', tg.themeParams.secondary_bg_color || '#303030');
 
         // --- Configuration (UPDATE THESE!) ---
-        const rawApiBaseUrl = "https://your-xewee-backend.railway.app"; 
+        const rawApiBaseUrl = "https://web-production-078c8.up.railway.app"; 
         const API_BASE_URL = rawApiBaseUrl.endsWith('/') ? rawApiBaseUrl.slice(0, -1) : rawApiBaseUrl; 
         
         const BOT_USERNAME = "XeweeBot"; 
@@ -1004,8 +1004,6 @@
 
         // --- Frontend Rendering Functions (Declared at top for availability) ---
 
-        // IMPORTANT: renderAll and renderNotifications defined here to ensure they are available
-        // before fetchInitialData (which calls renderAll) is called.
         function renderAll(){
             // --- Home View ---
             document.getElementById('balanceAmount').innerText = `P${(appData.balance || 0).toFixed(2)}`;
@@ -1527,6 +1525,8 @@
                 statusElement.innerText = `Room: ${gameData.room_name || 'Unnamed Room'} (ID: ${activeGameRoomId}) - Waiting for opponent...`;
                 gamePlayArea.style.display = 'none';
                 gamePromptElement.innerText = "Waiting for opponent to join...";
+                yourLastMoveElement.innerText = rpsEmojis['none'];
+                opponentLastMoveElement.innerText = rpsEmojis['none'];
             } else if (gameData.status === 'in_progress') {
                 statusElement.innerText = `Room: ${gameData.room_name || 'Unnamed Room'} (ID: ${activeGameRoomId}) - Game in progress!`;
                 gamePlayArea.style.display = 'block';
@@ -1646,7 +1646,7 @@
             } 
 
             const reader = new FileReader(); 
-            reader.readAsDataURL(photoInput.files[0]); // Changed to files[0] to correctly read the file
+            reader.readAsDataURL(photoInput.files[0]); 
             
             reader.onload = async () => { 
                 document.getElementById('loading').style.display = 'flex'; 
