@@ -37,6 +37,9 @@
             --notification-text-color: #ffffff; /* White text for notifications */
             --notification-badge-bg: #ff0000; /* Red badge for unread notifications */
             --notification-badge-text: #ffffff;
+            --game-rock: #e57373;
+            --game-paper: #81c784;
+            --game-scissors: #64b5f6;
         }
         
         /* Keyframe Animations */
@@ -79,7 +82,7 @@
             background: var(--tg-secondary-bg); 
             padding: 15px; 
             margin-bottom: 15px; 
-            box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.1); /* Subtle inner shadow for depth */
+            box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.1); 
         }
         
         /* Header Styling */
@@ -89,9 +92,9 @@
             align-items: center;
             margin-bottom: 10px;
             padding: 5px 0; 
-            border-bottom: 2px solid var(--pixel-border-light); /* Separator */
-            margin-left: -10px; /* Adjust for body padding */
-            margin-right: -10px; /* Adjust for body padding */
+            border-bottom: 2px solid var(--pixel-border-light); 
+            margin-left: -10px; 
+            margin-right: -10px; 
             padding-left: 10px;
             padding-right: 10px;
         }
@@ -103,11 +106,11 @@
         .header .app-title-tagline h1 { 
             font-size: 28px; 
             margin: 0; 
-            margin-bottom: 2px; /* Reduced space below title */
+            margin-bottom: 2px; 
             color: var(--tg-text);
         } 
         .header .app-title-tagline p { 
-            font-size: 16px; /* Slightly smaller for tagline */
+            font-size: 16px; 
             color: var(--tg-hint); 
             margin: 0; 
         }
@@ -137,9 +140,9 @@
             transform: scale(0.95) translateY(0); 
             filter: drop-shadow(0 0 1px var(--tg-hint)); 
         }
-        .header-icon-button.active-header-nav { /* Style for active header nav item */
+        .header-icon-button.active-header-nav { 
             filter: drop-shadow(0 0 5px var(--tg-button));
-            color: var(--tg-button); /* Highlight color */
+            color: var(--tg-button); 
             transform: translateY(-1px);
         }
         .header-icon-button .notification-badge {
@@ -157,7 +160,7 @@
             box-sizing: border-box;
             display: none; 
             border: 1px solid var(--notification-badge-text); 
-            animation: pulse 1.5s infinite; /* Pulsing effect for unread */
+            animation: pulse 1.5s infinite; 
         }
         
         /* Balance Card Specifics */
@@ -313,7 +316,11 @@
             box-shadow: 5px 5px 0px 0px rgba(0,0,0,0.3); 
             animation: fadeIn 0.3s forwards;
         }
-        
+        .modal-content h2 { margin-top: 0; font-size: 24px; color: var(--tg-text); }
+        .modal-content p { font-size: 16px; color: var(--tg-hint); line-height: 1.5; margin-bottom: 15px;}
+        .modal-content ul { list-style: none; padding: 0; margin-bottom: 15px;}
+        .modal-content ul li { font-size: 16px; color: var(--tg-text); margin-bottom: 5px; }
+
         /* Form Group Styling */
         .form-group { margin-bottom: 15px; } 
         .form-group label { display: block; font-size: 18px; margin-bottom: 8px; color: var(--tg-text); } 
@@ -370,7 +377,7 @@
             color: var(--notification-text-color);
             border-color: var(--accent-red);
         }
-        .notification-item.status-info { /* For invites, gifts received */
+        .notification-item.status-info { 
             background-color: var(--notification-info-bg);
             color: var(--notification-text-color);
             border-color: var(--tg-button);
@@ -566,6 +573,7 @@
             border: 3px solid var(--pixel-border-dark);
             border-right-color: var(--pixel-border-light);
             border-bottom-color: var(--pixel-border-light);
+            box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.1);
         }
         .game-room-item .game-info {
             flex-grow: 1;
@@ -589,6 +597,60 @@
             text-align: center;
             margin-top: 20px;
         }
+        .game-status-message {
+            font-size: 18px;
+            color: var(--accent-yellow);
+            margin-bottom: 15px;
+        }
+        .game-scoreboard {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 24px;
+            color: var(--tg-text);
+            margin-bottom: 20px;
+            background: var(--tg-bg);
+            padding: 10px;
+            border: 2px solid var(--pixel-border-dark);
+        }
+        .game-scoreboard span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .game-scoreboard .score {
+            font-size: 32px;
+            color: var(--accent-green);
+            text-shadow: 2px 2px 0px var(--pixel-border-dark);
+        }
+        .game-moves-display {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+            min-height: 80px; /* Ensure space for moves */
+            background: var(--tg-bg);
+            padding: 10px;
+            border: 2px solid var(--pixel-border-dark);
+            font-size: 48px;
+        }
+        .game-moves-display .player-move, .game-moves-display .opponent-move {
+            text-align: center;
+            flex: 1;
+        }
+        .game-moves-display .vs {
+            font-size: 24px;
+            color: var(--tg-hint);
+        }
+
+        .game-result-message {
+            margin-top: 20px;
+            font-size: 24px;
+            color: var(--accent-yellow);
+            text-shadow: 2px 2px 0px var(--pixel-border-dark);
+            min-height: 30px; /* Reserve space */
+        }
+
         .game-play-area .move-buttons {
             display: flex;
             justify-content: center;
@@ -614,18 +676,26 @@
             border-bottom-color: var(--pixel-border-dark);
             transform: translateY(1px) translateX(1px);
         }
-        .game-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 15px;
-            font-size: 20px;
+
+        /* Game Rules Modal */
+        #gameRulesModal .modal-content {
+            max-width: 500px;
+        }
+        #gameRulesModal .modal-content h2 {
+            text-align: center;
+            color: var(--accent-yellow);
+        }
+        #gameRulesModal .modal-content p, #gameRulesModal .modal-content ul {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+        #gameRulesModal .modal-content ul li {
+            margin-bottom: 5px;
             color: var(--tg-text);
         }
-        .game-result-message {
+        #gameRulesModal .modal-content .close-button {
             margin-top: 20px;
-            font-size: 24px;
-            color: var(--accent-yellow);
-            text-shadow: 2px 2px 0px var(--pixel-border-dark);
+            background: var(--tg-button);
         }
 
     </style>
@@ -643,10 +713,10 @@
                 <p>Your Pixel Quest for Rewards!</p> 
             </div>
             <div class="top-right-nav">
-                <button type="button" class="header-icon-button" onclick="showView('notificationsView')">
+                <button type="button" class="header-icon-button" onclick="showView('notificationsView')" id="headerNotifBtn">
                     🔔<span id="unreadNotifications" class="notification-badge" style="display:none;">0</span>
                 </button>
-                <button type="button" class="header-icon-button" onclick="showView('profileView')">
+                <button type="button" class="header-icon-button" onclick="showView('profileView')" id="headerProfileBtn">
                     👤
                 </button>
             </div>
@@ -707,7 +777,10 @@
 
     <!-- Games View (NEW FEATURE) -->
     <div id="gamesView" class="app-view">
-        <div class="header"> <h1>Xewee Games</h1> </div>
+        <div class="header"> 
+            <h1>Xewee Games</h1> 
+            <button type="button" class="button" onclick="openGameRulesModal()" style="width: auto; padding: 8px 12px; font-size: 16px; margin-left: auto;">Rules</button>
+        </div>
         
         <div class="pixel-container">
             <h3>Create Game Room (Jack N Poy)</h3>
@@ -728,23 +801,30 @@
             <h3>Available Rooms</h3>
             <button type="button" id="refreshRoomsBtn" class="button" style="margin-bottom: 15px; background: var(--tg-hint);">Refresh Rooms</button>
             <ul id="availableRoomsList" class="list">
-                <!-- Dynamic list of available rooms will be loaded here -->
-                <li class="pixel-container"><p>No rooms available. Create one!</p></li>
+                <li class="pixel-container"><p>Loading available rooms...</p></li>
             </ul>
         </div>
 
         <div class="pixel-container" id="myActiveGameSection" style="display:none;">
             <h3>My Active Game</h3>
-            <p id="activeGameStatus" style="font-size: 16px; color: var(--accent-yellow); margin-bottom: 10px;">Waiting for opponent...</p>
+            <p id="activeGameStatus" class="game-status-message">Loading game status...</p>
             
             <div id="gamePlayArea" style="display:none;">
-                <div class="game-stats">
-                    <span>You: <span id="playerScore">0</span></span>
-                    <span>Opponent: <span id="opponentScore">0</span></span>
+                <div class="game-scoreboard">
+                    <span>You: <span id="playerScore" class="score">0</span></span>
+                    <span>Vs</span>
+                    <span><span id="opponentNameDisplay">Opponent</span>: <span id="opponentScore" class="score">0</span></span>
                 </div>
-                <div class="game-result-message" id="gameResultMessage"></div>
 
-                <p style="margin-top: 20px;">Make your move!</p>
+                <div class="game-moves-display">
+                    <span class="player-move" id="yourLastMove"></span>
+                    <span class="vs">VS</span>
+                    <span class="opponent-move" id="opponentLastMove"></span>
+                </div>
+
+                <p class="game-result-message" id="gameResultMessage"></p>
+
+                <p style="margin-top: 20px;" id="gamePrompt">Make your move!</p>
                 <div class="move-buttons">
                     <button type="button" data-move="rock">✊</button>
                     <button type="button" data-move="paper">✋</button>
@@ -815,6 +895,24 @@
         </div>
     </div>
 
+    <!-- Game Rules Modal (NEW) -->
+    <div id="gameRulesModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Jack N Poy Rules</h2>
+            <p><strong>Game Type:</strong> Rock-Paper-Scissors</p>
+            <p><strong>Goal:</strong> Be the first player to reach 3 points!</p>
+            <ul>
+                <li>✊ **Rock** crushes ✌️ **Scissors**</li>
+                <li>✋ **Paper** covers ✊ **Rock**</li>
+                <li>✌️ **Scissors** cuts ✋ **Paper**</li>
+            </ul>
+            <p>If both players choose the same move, it's a draw, and no points are awarded.</p>
+            <p>To create a room, specify a bet amount from your balance. An opponent must join and match your bet. The winner takes the entire pot!</p>
+            <p>Leaving an active game will result in a refund of your bet, but the game will be cancelled for both players.</p>
+            <button type="button" class="button close-button" onclick="closeGameRulesModal()">Got it!</button>
+        </div>
+    </div>
+
     <!-- Bottom Navigation Bar -->
     <nav class="bottom-nav">
         <div id="navHome" class="nav-item active" onclick="showView('homeView')"> <div class="icon">🏠</div> <div class="label">Home</div> </div>
@@ -851,15 +949,25 @@
 
         let appData = {}; 
         let withdrawalMethod = ''; 
-        let activeGameRoomId = null; // Track if user is in a game
-        let gameUpdateInterval = null; // For polling game state
+        let activeGameRoomId = null; 
+        let gameUpdateInterval = null; 
         
         const TASK_MILESTONES_UI = {10: 50.0, 20: 150.0, 30: 400.0}; 
 
         // --- Utility Functions ---
         const views = document.querySelectorAll('.app-view');
         const bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item'); 
-        const headerNavButtons = document.querySelectorAll('.header-icon-button');
+        const headerNotifBtn = document.getElementById('headerNotifBtn');
+        const headerProfileBtn = document.getElementById('headerProfileBtn');
+        const notificationBadge = document.getElementById('unreadNotifications');
+
+        // Emoji map for RPS
+        const rpsEmojis = {
+            'rock': '✊',
+            'paper': '✋',
+            'scissors': '✌️',
+            'none': '❓'
+        };
 
         function showView(viewId) { 
             tg.HapticFeedback.impactOccurred('light'); 
@@ -868,36 +976,35 @@
             document.getElementById(viewId).classList.add('active'); 
             
             bottomNavItems.forEach(n => n.classList.remove('active')); 
-            headerNavButtons.forEach(btn => btn.classList.remove('active-header-nav')); 
+            headerNotifBtn.classList.remove('active-header-nav');
+            headerProfileBtn.classList.remove('active-header-nav');
 
             const currentBottomNavItem = document.getElementById(`nav${viewId.replace('View', '')}`);
             if (currentBottomNavItem) {
                 currentBottomNavItem.classList.add('active'); 
             } else if (viewId === 'notificationsView') {
-                document.querySelector('.header-icon-button:nth-child(1)').classList.add('active-header-nav');
+                headerNotifBtn.classList.add('active-header-nav');
             } else if (viewId === 'profileView') {
-                document.querySelector('.header-icon-button:nth-child(2)').classList.add('active-header-nav');
+                headerProfileBtn.classList.add('active-header-nav');
             }
 
-            // Trigger data fetching/rendering for specific views
             if (viewId === 'notificationsView') {
                 fetchNotifications();
             } else if (viewId === 'homeView' || viewId === 'profileView') {
                 fetchInitialData(); 
             } else if (viewId === 'gamesView') {
                 fetchAvailableRooms();
-                // If user is in an active game, show their game section
                 if (activeGameRoomId) {
                     document.getElementById('myActiveGameSection').style.display = 'block';
-                    document.getElementById('gamePlayArea').style.display = 'block'; // Show game controls
+                    document.getElementById('gamePlayArea').style.display = 'block'; 
                     startGamePolling(activeGameRoomId);
                 } else {
                     document.getElementById('myActiveGameSection').style.display = 'none';
-                    document.getElementById('gamePlayArea').style.display = 'none'; // Hide game controls
+                    document.getElementById('gamePlayArea').style.display = 'none'; 
                     stopGamePolling();
                 }
             } else {
-                stopGamePolling(); // Stop polling if not in games view
+                stopGamePolling(); 
             }
         }
 
@@ -911,6 +1018,14 @@
             setTimeout(() => { 
                 toast.remove(); 
             }, 2500); 
+        }
+
+        function openGameRulesModal() {
+            document.getElementById('gameRulesModal').style.display = 'flex';
+        }
+
+        function closeGameRulesModal() {
+            document.getElementById('gameRulesModal').style.display = 'none';
         }
         
         // --- API Calls ---
@@ -937,6 +1052,19 @@
                     return; 
                 }
                 appData = data; 
+                if (appData.active_game_room_id) {
+                    activeGameRoomId = appData.active_game_room_id;
+                    // If we're on the games view, ensure UI is updated
+                    if (document.getElementById('gamesView').classList.contains('active')) {
+                        document.getElementById('myActiveGameSection').style.display = 'block';
+                        document.getElementById('gamePlayArea').style.display = 'block'; 
+                        startGamePolling(activeGameRoomId);
+                    }
+                } else {
+                    activeGameRoomId = null;
+                    stopGamePolling();
+                    document.getElementById('myActiveGameSection').style.display = 'none';
+                }
                 renderAll(); 
             } catch (error) { 
                 console.error("fetchInitialData error:", error);
@@ -962,10 +1090,8 @@
                 const notifications = await response.json();
                 renderNotifications(notifications);
                 
-                // Update notification badge (assuming 'is_read' field or similar in backend)
-                // For now, let's count anything not 'approved' or 'rejected' as potentially unread.
-                const unreadCount = notifications.filter(n => (n.status === 'pending' || n.type === 'referral_join' || n.type === 'gift_received')).length; 
-                const notificationBadge = document.getElementById('unreadNotifications');
+                // Update notification badge: count items where is_read is false
+                const unreadCount = notifications.filter(n => !n.is_read).length; 
                 if (unreadCount > 0) {
                     notificationBadge.innerText = unreadCount;
                     notificationBadge.style.display = 'block';
@@ -987,7 +1113,6 @@
                 if (ok) {
                     document.getElementById('loading').style.display = 'flex';
                     try {
-                        // This endpoint needs to be implemented in main.py
                         const url = `${API_BASE_URL}/mark_notifications_as_read`; 
                         const response = await fetch(url, {
                             method: 'POST',
@@ -1000,7 +1125,7 @@
                         }
                         showToast('All notifications marked as read!');
                         fetchNotifications(); 
-                        document.getElementById('unreadNotifications').style.display = 'none'; 
+                        notificationBadge.style.display = 'none'; 
                     } catch (error) {
                         console.error("Mark all as read error:", error);
                         tg.showAlert(error.message || 'Failed to mark notifications as read.');
@@ -1016,7 +1141,7 @@
             const roomName = document.getElementById('gameRoomName').value.trim();
 
             if (isNaN(betAmount) || betAmount <= 0) {
-                tg.showAlert('Please enter a valid bet amount.');
+                tg.showAlert('Please enter a valid positive bet amount.');
                 return;
             }
             if (betAmount > appData.balance) {
@@ -1037,13 +1162,10 @@
                     throw new Error(errorData.detail || 'Failed to create game room.');
                 }
                 const result = await response.json();
-                tg.showAlert(`Game room "${result.room_name}" created! Waiting for opponent.`);
+                tg.showAlert(`Game room "${result.room_name || 'Unnamed Room'}" created! Waiting for opponent.`);
                 activeGameRoomId = result.room_id;
                 document.getElementById('createGameRoomForm').reset();
-                document.getElementById('myActiveGameSection').style.display = 'block';
-                document.getElementById('activeGameStatus').innerText = `Room: ${result.room_name} (ID: ${activeGameRoomId}) - Waiting for opponent.`;
-                document.getElementById('gamePlayArea').style.display = 'none'; // Hide play area until opponent joins
-                startGamePolling(activeGameRoomId);
+                showView('gamesView'); // Go to games view to see active game
                 fetchInitialData(); // Refresh balance
             } catch (error) {
                 console.error("Create room error:", error);
@@ -1059,7 +1181,7 @@
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ user_id: user.id, _auth: initData }) // Pass user for personalized lists if needed
+                    body: JSON.stringify({ user_id: user.id, _auth: initData }) 
                 });
                 if (!response.ok) {
                     const errorData = await response.json();
@@ -1069,7 +1191,6 @@
                 renderAvailableRooms(rooms);
             } catch (error) {
                 console.error("Fetch available rooms error:", error);
-                // Don't show alert for passive refresh errors unless critical
             }
         }
 
@@ -1083,23 +1204,20 @@
             }
 
             rooms.forEach(room => {
-                // Don't show rooms where the current user is the creator
-                if (room.creator_id === user.id) return; 
-
+                // The backend should already filter rooms created by the current user
                 const li = document.createElement('li');
                 li.className = 'list-item game-room-item';
                 li.innerHTML = `
                     <div class="game-info">
                         <h3>${room.room_name || `Room ID: ${room.room_id}`}</h3>
                         <p>Bet: P${room.bet_amount.toFixed(2)}</p>
-                        <p>Creator: ${room.creator_name}</p>
+                        <p>Creator: ${room.creator_name || 'Unknown'}</p>
                     </div>
                     <button type="button" class="button join-button" data-room-id="${room.room_id}" style="background: var(--accent-yellow); color: var(--pixel-border-dark);">Join</button>
                 `;
                 availableRoomsList.appendChild(li);
             });
 
-            // Add event listeners for join buttons
             availableRoomsList.querySelectorAll('.join-button').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const roomId = e.target.dataset.roomId;
@@ -1122,12 +1240,9 @@
                     throw new Error(errorData.detail || 'Failed to join game room.');
                 }
                 const result = await response.json();
-                tg.showAlert(`Joined room "${result.room_name}"!`);
+                tg.showAlert(`Joined room "${result.room_name || 'Unnamed Room'}"! Game Started!`);
                 activeGameRoomId = result.room_id;
-                document.getElementById('myActiveGameSection').style.display = 'block';
-                document.getElementById('activeGameStatus').innerText = `Room: ${result.room_name} (ID: ${activeGameRoomId}) - Game Started!`;
-                document.getElementById('gamePlayArea').style.display = 'block'; // Show game controls
-                startGamePolling(activeGameRoomId);
+                showView('gamesView'); // Go to games view to see active game
                 fetchInitialData(); // Refresh balance
             } catch (error) {
                 console.error("Join room error:", error);
@@ -1142,6 +1257,9 @@
                 tg.showAlert('You are not in an active game.');
                 return;
             }
+            // Disable move buttons temporarily
+            document.querySelectorAll('#gamePlayArea .move-buttons button').forEach(btn => btn.disabled = true);
+
             document.getElementById('loading').style.display = 'flex';
             try {
                 const url = `${API_BASE_URL}/games/make_move`;
@@ -1157,12 +1275,15 @@
                 const result = await response.json();
                 tg.HapticFeedback.impactOccurred('medium');
                 showToast(`You chose ${move.toUpperCase()}!`);
-                updateGameUI(result); // Update UI immediately after making a move
+                updateGameUI(result); 
+                fetchInitialData(); // Refresh balance/game state if game ended
             } catch (error) {
                 console.error("Make move error:", error);
                 tg.showAlert(error.message || 'Could not make move.');
             } finally {
                 document.getElementById('loading').style.display = 'none';
+                // Re-enable buttons if game is still active and it's player's turn (or opponent made move)
+                // This will be handled by the next fetchGameStatus or the updateGameUI if a round ended.
             }
         }
 
@@ -1171,7 +1292,7 @@
                 tg.showAlert('You are not in an active game.');
                 return;
             }
-            tg.showConfirm('Are you sure you want to leave this game?', async (ok) => {
+            tg.showConfirm('Are you sure you want to leave this game? Your bet might be forfeited if game is in progress, but you will be refunded if game is waiting for opponent.', async (ok) => {
                 if (ok) {
                     document.getElementById('loading').style.display = 'flex';
                     try {
@@ -1187,11 +1308,9 @@
                         }
                         tg.showAlert('You have left the game.');
                         activeGameRoomId = null;
-                        document.getElementById('myActiveGameSection').style.display = 'none';
-                        document.getElementById('gamePlayArea').style.display = 'none';
                         stopGamePolling();
-                        fetchAvailableRooms(); // Refresh available rooms
-                        fetchInitialData(); // Refresh balance
+                        showView('gamesView'); // Go back to available rooms list
+                        fetchInitialData(); 
                     } catch (error) {
                         console.error("Leave game error:", error);
                         tg.showAlert(error.message || 'Could not leave game.');
@@ -1202,8 +1321,8 @@
             });
         }
 
-        async function fetchGameStatus() {
-            if (!activeGameRoomId) {
+        async function fetchGameStatus(roomId) {
+            if (!activeGameRoomId || roomId !== activeGameRoomId) {
                 stopGamePolling();
                 return;
             }
@@ -1217,13 +1336,11 @@
                 if (!response.ok) {
                     const errorData = await response.json();
                     // If game state is not found or ended, clear activeGameRoomId
-                    if (response.status === 404 || errorData.detail.includes("Game ended")) {
+                    if (response.status === 404 || (errorData.detail && errorData.detail.includes("Game ended"))) {
                         tg.showAlert(errorData.detail || "Game ended or not found.");
                         activeGameRoomId = null;
-                        document.getElementById('myActiveGameSection').style.display = 'none';
-                        document.getElementById('gamePlayArea').style.display = 'none';
                         stopGamePolling();
-                        fetchAvailableRooms();
+                        showView('gamesView'); 
                         fetchInitialData();
                         return;
                     }
@@ -1233,43 +1350,71 @@
                 updateGameUI(gameData);
             } catch (error) {
                 console.error("Fetch game status error:", error);
+                // In case of network errors during polling, don't show repeated alerts.
+                // You might want to have a visual indicator of connection issues.
             }
         }
 
         function updateGameUI(gameData) {
             const statusElement = document.getElementById('activeGameStatus');
             const gamePlayArea = document.getElementById('gamePlayArea');
+            const opponentNameDisplay = document.getElementById('opponentNameDisplay');
             const playerScoreElement = document.getElementById('playerScore');
             const opponentScoreElement = document.getElementById('opponentScore');
             const gameResultMessageElement = document.getElementById('gameResultMessage');
+            const yourLastMoveElement = document.getElementById('yourLastMove');
+            const opponentLastMoveElement = document.getElementById('opponentLastMove');
+            const gamePromptElement = document.getElementById('gamePrompt');
+            const moveButtons = document.querySelectorAll('#gamePlayArea .move-buttons button');
+
+            opponentNameDisplay.innerText = gameData.opponent_name || 'Opponent'; // Display opponent's name
 
             if (gameData.status === 'waiting_for_opponent') {
-                statusElement.innerText = `Room: ${gameData.room_name} (ID: ${activeGameRoomId}) - Waiting for opponent...`;
+                statusElement.innerText = `Room: ${gameData.room_name || 'Unnamed Room'} (ID: ${activeGameRoomId}) - Waiting for opponent...`;
                 gamePlayArea.style.display = 'none';
+                gamePromptElement.innerText = "Waiting for opponent to join...";
             } else if (gameData.status === 'in_progress') {
-                statusElement.innerText = `Room: ${gameData.room_name} (ID: ${activeGameRoomId}) - Game in progress!`;
+                statusElement.innerText = `Room: ${gameData.room_name || 'Unnamed Room'} (ID: ${activeGameRoomId}) - Game in progress!`;
                 gamePlayArea.style.display = 'block';
                 playerScoreElement.innerText = gameData.player_score;
-                opponentScoreElement.innerText = gameData.opponent_score;
+                opponentScoreElement.innerText = gameData.opponent_score_display;
+                
+                yourLastMoveElement.innerText = rpsEmojis[gameData.your_last_move || 'none'];
+                opponentLastMoveElement.innerText = rpsEmojis[gameData.opponent_last_move || 'none'];
+
                 gameResultMessageElement.innerText = gameData.last_round_result || "Make your move!";
+                
+                // Enable/disable buttons based on whether player has moved
+                if (gameData.your_move_made) {
+                    gamePromptElement.innerText = "Waiting for opponent's move...";
+                    moveButtons.forEach(btn => btn.disabled = true);
+                } else {
+                    gamePromptElement.innerText = "Make your move!";
+                    moveButtons.forEach(btn => btn.disabled = false);
+                }
+
             } else if (gameData.status === 'finished') {
                 statusElement.innerText = `Game Finished! Winner: ${gameData.winner_name || 'Draw'}`;
                 gamePlayArea.style.display = 'block';
                 playerScoreElement.innerText = gameData.player_score;
-                opponentScoreElement.innerText = gameData.opponent_score;
+                opponentScoreElement.innerText = gameData.opponent_score_display;
                 gameResultMessageElement.innerText = gameData.final_result_message;
+                yourLastMoveElement.innerText = rpsEmojis[gameData.your_last_move || 'none'];
+                opponentLastMoveElement.innerText = rpsEmojis[gameData.opponent_last_move || 'none'];
+                gamePromptElement.innerText = "Game is over.";
+
                 tg.showAlert(gameData.final_result_message);
-                activeGameRoomId = null; // Game ended
+                activeGameRoomId = null; 
                 stopGamePolling();
                 document.getElementById('myActiveGameSection').style.display = 'none';
-                fetchAvailableRooms();
-                fetchInitialData();
+                showView('gamesView'); // Go back to available rooms list
+                fetchInitialData(); 
             }
         }
 
         function startGamePolling(roomId) {
-            stopGamePolling(); // Clear any existing interval
-            gameUpdateInterval = setInterval(() => fetchGameStatus(roomId), 3000); // Poll every 3 seconds
+            stopGamePolling(); 
+            gameUpdateInterval = setInterval(() => fetchGameStatus(roomId), 2000); // Poll every 2 seconds for faster updates
         }
 
         function stopGamePolling() {
@@ -1279,171 +1424,7 @@
             }
         }
 
-        // --- UI Rendering ---
-        function renderAll(){
-            // --- Home View ---
-            document.getElementById('balanceAmount').innerText = `P${(appData.balance || 0).toFixed(2)}`;
-            document.getElementById('announcementText').innerText = appData.announcement || "Welcome! No new announcements.";
-            
-            const claimBtn = document.getElementById('claimDailyBonusBtn'); 
-            const dailyBonusStatus = document.getElementById('dailyBonusStatus'); 
-            const dailyBonusProgress = document.getElementById('dailyBonusProgress');
-            const dailyBonusAmount = appData.daily_bonus_amount || 10.0; 
-
-            if (appData.can_claim_daily) { 
-                claimBtn.classList.remove('disabled'); 
-                claimBtn.innerText = `Claim Bonus (P${dailyBonusAmount.toFixed(2)})`; 
-                dailyBonusStatus.innerText = 'Ready to Claim!'; 
-                dailyBonusProgress.style.width = '100%'; 
-            } else { 
-                claimBtn.classList.add('disabled'); 
-                const invitesNeeded = Math.max(0, appData.daily_bonus_req - appData.daily_claim_invites); 
-                claimBtn.innerText = `Invite ${invitesNeeded} more!`; 
-                dailyBonusStatus.innerText = `Invites: ${appData.daily_claim_invites}/${appData.daily_bonus_req} (Needed for tomorrow)`; 
-                dailyBonusProgress.style.width = `${(appData.daily_claim_invites / appData.daily_bonus_req) * 100}%`; 
-            }
-
-            // --- Tasks View ---
-            const taskList = document.getElementById('taskList'); 
-            taskList.innerHTML = '';
-            if (appData.tasks && appData.tasks.length > 0) { 
-                appData.tasks.forEach(task => { 
-                    const li = document.createElement('li'); 
-                    li.className = 'list-item'; 
-                    li.innerHTML = `
-                        <h3>${task.description}</h3>
-                        <p>REWARD: P${task.reward.toFixed(2)}</p>
-                        <div style="display:flex; gap: 10px; margin-top: 15px;">
-                            <a href="${task.link}" target="_blank" class="button" style="flex:1;">Visit Link</a>
-                            <button type="button" class="button submit-proof-btn" data-task-id="${task.id}" style="flex:1; background: var(--accent-green); color: var(--pixel-border-dark);">Submit Proof</button>
-                        </div>
-                    `; 
-                    taskList.appendChild(li); 
-                }); 
-            } else { 
-                taskList.innerHTML = '<li class="pixel-container"><p>No tasks available. Check back later!</p></li>'; 
-            }
-
-            // --- Referrals View ---
-            document.getElementById('referralCount').innerText = appData.referral_count || 0;
-            document.getElementById('successfulReferralCount').innerText = appData.successful_referrals || 0;
-            document.getElementById('referralLink').innerText = `https://t.me/${BOT_USERNAME}?start=${user.id}`;
-
-            // --- Profile View ---
-            document.getElementById('profileName').innerText = `Player: ${user.first_name || 'Unknown'}`;
-            document.getElementById('profileId').innerText = `ID: ${user.id}`;
-            document.getElementById('tasksCompleted').innerText = `Tasks Completed: ${appData.tasks_completed || 0}`;
-            
-            const milestonesList = document.getElementById('taskMilestonesList'); 
-            milestonesList.innerHTML = ''; 
-            const claimedMilestones = appData.claimed_milestones || {};
-            for (const milestoneKey in TASK_MILESTONES_UI) { 
-                const count = parseInt(milestoneKey); 
-                const reward = TASK_MILESTONES_UI[milestoneKey]; 
-                const backendMilestoneKey = `${count}_tasks`; 
-                const isClaimed = claimedMilestones[backendMilestoneKey]; 
-                const currentStatus = (appData.tasks_completed >= count) ? (isClaimed ? 'CLAIMED' : 'READY') : 'PENDING'; 
-                const statusColor = isClaimed ? 'var(--accent-green)' : (appData.tasks_completed >= count ? 'var(--accent-yellow)' : 'var(--tg-hint)'); 
-                const item = document.createElement('div'); 
-                item.className = 'milestone-item'; 
-                item.innerHTML = `<span>${count} Tasks:</span><span style="color: ${statusColor};">P${reward.toFixed(2)} (${currentStatus})</span>`; 
-                milestonesList.appendChild(item); 
-            }
-            
-            document.getElementById('minWithdrawalText').innerText = `Min: P${(appData.min_withdrawal || 300).toFixed(2)}`;
-            document.getElementById('maxWithdrawalText').innerText = `Max: P${(appData.max_withdrawal || 30000).toFixed(2)}`;
-            
-            const withdrawalList = document.getElementById('withdrawalList'); 
-            withdrawalList.innerHTML = '';
-            if (appData.withdrawals && appData.withdrawals.length > 0) { 
-                appData.withdrawals.forEach(w => { 
-                    const item = document.createElement('li'); 
-                    item.className = 'list-item withdrawal-item'; 
-                    item.innerHTML = `<span>P${w.amount.toFixed(2)} (${w.method}) on ${w.date}</span><span class="status status-${w.status}">${w.status.toUpperCase()}</span>`; 
-                    withdrawalList.appendChild(item); 
-                }); 
-            } else { 
-                withdrawalList.innerHTML = '<li class="pixel-container"><p>No withdrawal history.</p></li>'; 
-            }
-            
-            if (appData.withdrawal_maintenance) { 
-                document.getElementById('withdrawalMaintenanceOverlay').style.display = 'flex'; 
-            } else { 
-                document.getElementById('withdrawalMaintenanceOverlay').style.display = 'none'; 
-            }
-
-            // --- Gift View ---
-            document.getElementById('giftTicketCount').innerText = appData.gift_tickets || 0;
-            document.getElementById('buyTicketBtn').innerText = `Buy Tickets (P${(appData.gift_ticket_price || 10.00).toFixed(2)})`;
-            document.querySelector('#giftView .pixel-container p').innerHTML = `Uses 1 Ticket. A ${((appData.gift_fee_percent || 0.05)*100).toFixed(0)}% fee applies to the sent amount from your balance. Min: P${(appData.gift_min_amount || 30.00).toFixed(2)}`;
-
-            // Initial fetch for notifications when app data is loaded
-            fetchNotifications();
-        }
-
-        function renderNotifications(notifications) {
-            const notificationList = document.getElementById('notificationList');
-            notificationList.innerHTML = ''; 
-
-            if (!notifications || notifications.length === 0) {
-                notificationList.innerHTML = '<li class="pixel-container"><p>No new notifications.</p></li>';
-                return;
-            }
-
-            notifications.forEach(notif => {
-                const li = document.createElement('li');
-                let statusClass = `status-${notif.status}`;
-                if (notif.type === 'referral_join' || notif.type === 'gift_received') {
-                    statusClass = 'status-info'; // Use info style for these types
-                }
-                li.className = `list-item notification-item ${statusClass}`;
-                
-                let detailsHtml = '';
-                let title = '';
-
-                if (notif.type === 'task_submission') {
-                    title = `Task: ${notif.description}`;
-                    detailsHtml = `
-                        <p>Reward: P${notif.reward.toFixed(2)}</p>
-                    `;
-                } else if (notif.type === 'withdrawal') {
-                    title = `Withdrawal: P${notif.amount.toFixed(2)}`;
-                    detailsHtml = `
-                        <p>Method: ${notif.method}</p>
-                    `;
-                } else if (notif.type === 'referral_join') {
-                    title = `New Friend Joined!`;
-                    detailsHtml = `
-                        <p>User: ${notif.friend_name} (${notif.friend_id})</p>
-                        <p>Encourage them to complete tasks to earn!</p>
-                    `;
-                } else if (notif.type === 'gift_received') {
-                    title = `Gift Received!`;
-                    detailsHtml = `
-                        <p>From: User ${notif.sender_id}</p>
-                        <p>Amount: P${notif.amount.toFixed(2)}</p>
-                    `;
-                }
-
-                if (notif.status === 'rejected' && notif.reason) {
-                    detailsHtml += `<p class="reason">Reason: ${notif.reason}</p>`;
-                }
-                
-                li.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div>
-                            <h3>${title}</h3>
-                            ${detailsHtml}
-                            <div class="date">${new Date(notif.date).toLocaleDateString()}</div>
-                        </div>
-                        <span class="status ${statusClass}" style="flex-shrink: 0; margin-left: 10px;">${notif.status.toUpperCase()}</span>
-                    </div>
-                `;
-                notificationList.appendChild(li);
-            });
-        }
-        
-        // --- Event Listeners ---
+        // --- Initial Render and Event Listeners ---
         window.addEventListener('load', fetchInitialData); 
 
         if (user && user.first_name) {
@@ -1744,6 +1725,8 @@
             } 
         });
 
+        document.getElementById('markAllReadBtn').addEventListener('click', markAllNotificationsAsRead);
+
         // Game specific event listeners
         document.getElementById('createGameRoomForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1759,8 +1742,9 @@
             });
         });
 
-        // Initial fetch for available rooms when Games view is first accessed
-        // This is now handled by showView('gamesView')
+        // Close Game Rules Modal
+        document.querySelector('#gameRulesModal .close-button').addEventListener('click', closeGameRulesModal);
+
     </script>
 </body>
 </html>
