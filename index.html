@@ -103,6 +103,9 @@
             display: block; /* Make anchor tags behave like block buttons */
             width: 100%; /* Default to full width */
             box-sizing: border-box;
+            -webkit-appearance: none; /* Remove default button styling */
+            -moz-appearance: none;
+            appearance: none;
         } 
         .button:active { 
             border-color: var(--pixel-border-light); /* Invert border colors on click */
@@ -201,6 +204,9 @@
             background-color: var(--tg-bg); 
             color: var(--tg-text); 
             box-sizing: border-box; 
+            -webkit-appearance: none; /* Remove default styling for inputs */
+            -moz-appearance: none;
+            appearance: none;
         }
         
         /* Toast Notification */
@@ -244,6 +250,9 @@
             font-size: 18px; 
             font-family: 'VT323', monospace; 
             cursor: pointer; 
+            -webkit-appearance: none; 
+            -moz-appearance: none;
+            appearance: none;
         } 
         .method-selector button.selected { 
             background-color: var(--tg-text); 
@@ -271,74 +280,86 @@
             display: none; /* Hidden by default */
         }
 
-        /* Redeem Code UI - Ultimate Fix */
+        /* Redeem Code UI - Ultimate Fix (Improved) */
         .redeem-code-container h3 {
             margin-top: 0;
-            margin-bottom: 10px; /* Space above description */
+            margin-bottom: 10px; 
             font-size: 20px;
             color: var(--tg-text); 
-            text-align: left; /* Align title left as in image */
+            text-align: left; 
         }
 
         .redeem-code-container p.description {
             font-size: 16px; 
             line-height: 1.5; 
             color: var(--tg-hint); 
-            margin-bottom: 15px; /* Space below description */
-            text-align: left; /* Align description left as in image */
+            margin-bottom: 15px; 
+            text-align: left; 
         }
         
         .redeem-code-input-wrapper {
             display: flex;
-            gap: 0; /* No gap between input and button */
-            align-items: stretch; /* Make items stretch to fill container height */
+            gap: 0; 
+            align-items: stretch; 
             margin-top: 0; 
         }
 
         .pixel-input-recessed {
-            flex-grow: 1; /* Input takes up remaining space */
+            flex-grow: 1; 
             margin: 0; 
-            padding: 10px; /* Match button padding height */
+            padding: 10px; 
             font-size: 18px; 
             font-family: 'VT323', monospace; 
-            box-sizing: border-box; /* Include padding and border in width */
-            background-color: var(--pixel-input-bg); /* White background */
-            color: var(--pixel-input-text); /* Dark text */
-            outline: none; /* Remove blue outline on focus */
+            box-sizing: border-box; 
+            background-color: var(--pixel-input-bg); 
+            color: var(--pixel-input-text); 
+            outline: none; 
 
-            /* Recessed pixel border effect */
-            border: 3px solid var(--pixel-border-light); /* Lighter border on top/left */
-            border-right-color: var(--pixel-border-dark); /* Darker border on right */
-            border-bottom-color: var(--pixel-border-dark); /* Darker border on bottom */
+            border: 3px solid var(--pixel-border-light); 
+            border-right-color: var(--pixel-border-dark); 
+            border-bottom-color: var(--pixel-border-dark); 
             
-            /* Inner shadow for more depth, subtle */
             box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.2); 
-            -webkit-appearance: none; /* Remove default styling for inputs */
+            -webkit-appearance: none; 
             -moz-appearance: none;
             appearance: none;
         }
 
-        .redeem-code-input-wrapper .button {
-            width: auto; /* Button size based on content */
-            padding: 10px 15px; /* Adjust padding for the OK button */
-            flex-shrink: 0; /* Prevent button from shrinking */
-            display: inline-block; /* Ensure it looks like a button */
-            margin-left: 0; /* Remove any default margin that might create gap */
-            border-left: none; /* Make button visually connect to input */
-            /* Adjust button borders to match seamless connection */
-            border-top: 3px solid var(--pixel-border-dark); 
-            border-left: 3px solid var(--pixel-border-dark); /* This should now be dark to meet the input's dark border */
+        .redeem-code-input-wrapper .button-inline { /* Custom class for inline button */
+            width: auto; 
+            padding: 10px 15px; 
+            flex-shrink: 0; 
+            display: inline-block; 
+            /* Match standard button raised effect */
+            border: 3px solid var(--pixel-border-dark); 
             border-right-color: var(--pixel-border-light); 
             border-bottom-color: var(--pixel-border-light);
+            /* Connect seamlessly with input */
+            border-left: none; /* Remove left border as input's right border acts as separator */
+            margin-left: -3px; /* Overlap to remove visual gap and share the dark border */
+            position: relative; /* Ensure it layers correctly */
+            z-index: 1; /* Bring button to front if any overlap issues */
+            /* Inherit button styles */
+            background: var(--tg-button); 
+            color: var(--tg-button-text); 
+            font-size: 18px; 
+            font-family: 'VT323', monospace; 
+            cursor: pointer; 
+            text-align: center; 
+            text-decoration: none;
+            box-sizing: border-box;
+            -webkit-appearance: none; 
+            -moz-appearance: none;
+            appearance: none;
         }
 
-        /* Ensure .button:active works correctly when border-left is removed */
-        .redeem-code-input-wrapper .button:active {
+        /* Ensure .button-inline:active works correctly */
+        .redeem-code-input-wrapper .button-inline:active {
+            /* Invert border colors for pressed effect, maintaining dark left border for connection */
             border-color: var(--pixel-border-light);
             border-right-color: var(--pixel-border-dark);
             border-bottom-color: var(--pixel-border-dark);
-            /* Special handling for left border to match visual flow */
-            border-left-color: var(--pixel-border-dark); /* Connects to recessed input */
+            border-left-color: var(--pixel-border-dark); /* Keep left border dark for connection */
         }
 
     </style>
@@ -356,7 +377,7 @@
             <h3>Daily Login Bonus</h3>
             <p id="dailyBonusStatus" style="font-size: 16px; margin-bottom: 10px; color: var(--tg-hint);">Loading...</p>
             <div class="progress-bar"><div id="dailyBonusProgress" class="progress-fill"></div></div>
-            <a id="claimDailyBonusBtn" class="button" style="margin-top: 15px;">Claim Bonus (P10.00)</a>
+            <button type="button" id="claimDailyBonusBtn" class="button" style="margin-top: 15px;">Claim Bonus (P10.00)</button>
         </div>
         <div class="pixel-container announcement-card"> <h3>Announcements</h3> <p id="announcementText">Loading latest news...</p> </div>
     </div>
@@ -377,10 +398,9 @@
         <br>
         <div class="pixel-container">
             <h3>Your Unique Code</h3>
-            <!-- UPDATED REFERRAL RULE TEXT -->
             <p style="font-size: 16px; line-height: 1.5;">Share this code. For every friend who joins and completes a task, you earn a <strong>10% commission</strong> based on the task's reward!</p>
             <div id="referralLink" style="background: var(--tg-bg); padding: 10px; word-wrap: break-word; font-size: 14px; margin: 15px 0; border: 2px inset var(--pixel-border-dark);"></div>
-            <a id="copyLinkBtn" class="button">Copy Code</a>
+            <button type="button" id="copyLinkBtn" class="button">Copy Code</button>
         </div>
     </div>
     
@@ -393,16 +413,14 @@
                 <span id="giftTicketCount" style="font-size: 42px; color: var(--accent-yellow);">0</span>
                 <p style="color: var(--tg-hint); font-size: 16px; margin-top: 5px;">Tickets Available</p>
             </div>
-            <!-- UPDATED GIFT TICKET PRICE TEXT -->
-            <a id="buyTicketBtn" class="button" style="background: var(--accent-green); color: var(--pixel-border-dark);">Buy Tickets (P10.00)</a>
+            <button type="button" id="buyTicketBtn" class="button" style="background: var(--accent-green); color: var(--pixel-border-dark);">Buy Tickets (P10.00)</button>
         </div>
         <div class="pixel-container">
             <h3>Send a Gift</h3>
-            <!-- UPDATED MINIMUM GIFT AMOUNT TEXT -->
             <p style="font-size: 16px; line-height: 1.5;">Uses 1 Ticket. A 5% fee applies to the sent amount from your balance. Min: P30.00</p>
             <form id="giftForm">
-                <div class="form-group"><label for="giftRecipientId">Recipient User ID</label><input type="number" id="giftRecipientId" placeholder="e.g., 123456789"></div>
-                <div class="form-group"><label for="giftAmount">Amount</label><input type="number" id="giftAmount" placeholder="e.g., 500"></div>
+                <div class="form-group"><label for="giftRecipientId">Recipient User ID</label><input type="number" id="giftRecipientId" placeholder="e.g., 123456789" required></div>
+                <div class="form-group"><label for="giftAmount">Amount</label><input type="number" id="giftAmount" placeholder="e.g., 500" required></div>
                 <button type="submit" class="button">Send Gift</button>
             </form>
         </div>
@@ -420,13 +438,12 @@
             <h3>Task Milestones</h3>
             <div id="taskMilestonesList"></div>
         </div>
-        <!-- REDEEM CODE UI ULTIMATELY FIXED HERE -->
         <div class="pixel-container redeem-code-container">
             <h3>Redeem Code</h3>
             <p class="description">Enter your special code to claim rewards!</p>
             <div class="redeem-code-input-wrapper">
                 <input id="redeemCodeInput" type="text" placeholder="Enter Code" class="pixel-input-recessed">
-                <a id="redeemCodeBtn" class="button">OK</a>
+                <button type="button" id="redeemCodeBtn" class="button-inline">OK</button>
             </div>
         </div>
         <div class="pixel-container" style="position: relative;">
@@ -434,9 +451,9 @@
             <h3>Withdraw Funds</h3>
             <p style="font-size: 16px; line-height: 1.5;"><span id="minWithdrawalText">Min: P300.00</span>, <span id="maxWithdrawalText">Max: P30000.00</span></p>
             <form id="withdrawForm">
-                <div class="form-group"><label for="withdrawAmount">Amount</label><input type="number" id="withdrawAmount" placeholder="e.g., 500"></div>
+                <div class="form-group"><label for="withdrawAmount">Amount</label><input type="number" id="withdrawAmount" placeholder="e.g., 500" required></div>
                 <div class="form-group"><label>Method</label><div class="method-selector"><button type="button" id="gcashBtn">GCASH</button><button type="button" id="mayaBtn">MAYA</button></div></div>
-                <div class="form-group"><label for="withdrawDetails">Account Number</label><input type="tel" id="withdrawDetails" placeholder="Your GCash/Maya number"></div>
+                <div class="form-group"><label for="withdrawDetails">Account Number</label><input type="tel" id="withdrawDetails" placeholder="Your GCash/Maya number" required></div>
                 <p id="withdrawalFeeText" style="font-size: 14px; color: var(--tg-hint); text-align: center; display: none;"></p>
                 <button type="submit" class="button" style="background: var(--accent-red); color: var(--tg-button-text); margin-top: 10px;">Submit Withdrawal</button>
             </form>
@@ -454,7 +471,7 @@
             <form id="taskProofForm">
                 <div class="form-group"><label for="taskProofText">Note (Optional)</label><textarea id="taskProofText" rows="2"></textarea></div>
                 <div class="form-group"><label for="taskProofPhoto">Upload Image Proof</label><input type="file" id="taskProofPhoto" accept="image/*" required></div>
-                <div style="display: flex; gap: 10px;"><a id="cancelSubmitBtn" class="button" style="background: var(--tg-hint); flex:1;">Cancel</a><button type="submit" class="button" style="background: var(--accent-green); color: var(--pixel-border-dark); flex:1;">Submit</button></div>
+                <div style="display: flex; gap: 10px;"><button type="button" id="cancelSubmitBtn" class="button" style="background: var(--tg-hint); flex:1;">Cancel</button><button type="submit" class="button" style="background: var(--accent-green); color: var(--pixel-border-dark); flex:1;">Submit</button></div>
             </form>
         </div>
     </div>
@@ -474,13 +491,15 @@
         const tg = window.Telegram.WebApp; 
         tg.ready(); 
         tg.expand();
-        // Optional: Set Telegram theme colors for better integration
-        // document.documentElement.style.setProperty('--tg-bg', tg.themeParams.bg_color || '#212121');
-        // document.documentElement.style.setProperty('--tg-text', tg.themeParams.text_color || '#eeeeee');
-        // document.documentElement.style.setProperty('--tg-hint', tg.themeParams.hint_color || '#9e9e9e');
-        // document.documentElement.style.setProperty('--tg-button', tg.themeParams.button_color || '#42a5f5');
-        // document.documentElement.style.setProperty('--tg-button-text', tg.themeParams.button_text_color || '#ffffff');
-        // document.documentElement.style.setProperty('--tg-secondary-bg', tg.themeParams.secondary_bg_color || '#303030');
+
+        // Dynamically set Telegram theme colors for better integration
+        // These will override the CSS variables if Telegram theme params are available
+        document.documentElement.style.setProperty('--tg-bg', tg.themeParams.bg_color || '#212121');
+        document.documentElement.style.setProperty('--tg-text', tg.themeParams.text_color || '#eeeeee');
+        document.documentElement.style.setProperty('--tg-hint', tg.themeParams.hint_color || '#9e9e9e');
+        document.documentElement.style.setProperty('--tg-button', tg.themeParams.button_color || '#42a5f5');
+        document.documentElement.style.setProperty('--tg-button-text', tg.themeParams.button_text_color || '#ffffff');
+        document.documentElement.style.setProperty('--tg-secondary-bg', tg.themeParams.secondary_bg_color || '#303030');
 
         // --- Configuration (UPDATE THESE!) ---
         const API_BASE_URL = "https://your-xewee-backend.railway.app"; // *** IMPORTANT: REPLACE WITH YOUR RAILWAY BACKEND URL ***
@@ -547,6 +566,7 @@
                 appData = data; // Store fetched data
                 renderAll(); // Re-render UI with new data
             } catch (error) { 
+                console.error("fetchInitialData error:", error);
                 tg.showAlert(error.message || 'COULD NOT LOAD DATA. PLEASE RESTART.'); 
             } finally { 
                 document.getElementById('loading').style.display = 'none'; 
@@ -589,7 +609,7 @@
                         <p>REWARD: P${task.reward.toFixed(2)}</p>
                         <div style="display:flex; gap: 10px; margin-top: 15px;">
                             <a href="${task.link}" target="_blank" class="button" style="flex:1;">Visit Link</a>
-                            <a class="button submit-proof-btn" data-task-id="${task.id}" style="flex:1; background: var(--accent-green); color: var(--pixel-border-dark);">Submit Proof</a>
+                            <button type="button" class="button submit-proof-btn" data-task-id="${task.id}" style="flex:1; background: var(--accent-green); color: var(--pixel-border-dark);">Submit Proof</button>
                         </div>
                     `; 
                     taskList.appendChild(li); 
@@ -611,10 +631,12 @@
             const milestonesList = document.getElementById('taskMilestonesList'); 
             milestonesList.innerHTML = ''; 
             const claimedMilestones = appData.claimed_milestones || {};
-            for (const milestone in TASK_MILESTONES_UI) { 
-                const count = parseInt(milestone.split('_')[0]); 
-                const reward = TASK_MILESTONES_UI[milestone]; 
-                const isClaimed = claimedMilestones[milestone]; 
+            for (const milestoneKey in TASK_MILESTONES_UI) { 
+                const count = parseInt(milestoneKey); 
+                const reward = TASK_MILESTONES_UI[milestoneKey]; 
+                // Ensure key format matches backend (e.g., "10_tasks")
+                const backendMilestoneKey = `${count}_tasks`; 
+                const isClaimed = claimedMilestones[backendMilestoneKey]; 
                 const currentStatus = (appData.tasks_completed >= count) ? (isClaimed ? 'CLAIMED' : 'READY') : 'PENDING'; 
                 const statusColor = isClaimed ? 'var(--accent-green)' : (appData.tasks_completed >= count ? 'var(--accent-yellow)' : 'var(--tg-hint)'); 
                 const item = document.createElement('div'); 
@@ -666,6 +688,9 @@
             navigator.clipboard.writeText(document.getElementById('referralLink').innerText).then(() => { 
                 tg.HapticFeedback.notificationOccurred('success'); 
                 showToast('Link Copied!'); 
+            }).catch(err => {
+                console.error("Failed to copy text: ", err);
+                tg.showAlert("Failed to copy link. Please try manually.");
             }); 
         });
 
@@ -689,6 +714,7 @@
                 tg.showAlert(`P${(appData.daily_bonus_amount || 10.0).toFixed(2)} has been added to your balance!`); // Use appData for amount
                 fetchInitialData(); // Refresh data
             } catch (error) { 
+                console.error("Claim daily bonus error:", error);
                 tg.showAlert(error.message || 'Could not claim daily bonus.'); 
             } finally { 
                 document.getElementById('loading').style.display = 'none'; 
@@ -753,19 +779,21 @@
                     document.getElementById('taskProofForm').reset(); // Clear form
                     fetchInitialData(); // Refresh data
                 } catch (error) { 
+                    console.error("Task submission error:", error);
                     tg.showAlert(error.message || 'Submission failed.'); 
                 } finally { 
                     document.getElementById('loading').style.display = 'none'; 
                 } 
             }; 
             reader.onerror = () => { 
+                console.error("Error reading file:", reader.error);
                 tg.showAlert('Error reading file.'); 
             }; 
         });
 
         // Redeem Code
         document.getElementById('redeemCodeBtn').addEventListener('click', async () => { 
-            const code = document.getElementById('redeemCodeInput').value; 
+            const code = document.getElementById('redeemCodeInput').value.trim(); // Trim whitespace
             if (!code) { 
                 showToast('Please enter a code.');
                 return; 
@@ -786,6 +814,7 @@
                 document.getElementById('redeemCodeInput').value = ''; // Clear input
                 fetchInitialData(); // Refresh data
             } catch (error) { 
+                console.error("Redeem code error:", error);
                 tg.showAlert(error.message || 'Invalid code.'); 
             } finally { 
                 document.getElementById('loading').style.display = 'none'; 
@@ -814,7 +843,7 @@
                 return; 
             } 
             const amount = parseFloat(document.getElementById('withdrawAmount').value); 
-            const details = document.getElementById('withdrawDetails').value; 
+            const details = document.getElementById('withdrawDetails').value.trim(); 
             
             const minWithdrawal = appData.min_withdrawal || 300;
             const maxWithdrawal = appData.max_withdrawal || 30000;
@@ -832,7 +861,7 @@
                 return; 
             } 
             if (!withdrawalMethod) { 
-                tg.showAlert('Please select a withdrawal method.'); 
+                tg.showAlert('Please select a withdrawal method (GCash or Maya).'); 
                 return; 
             } 
             if (!details) { 
@@ -859,6 +888,7 @@
                 document.getElementById('mayaBtn').classList.remove('selected'); 
                 document.getElementById('withdrawalFeeText').style.display = 'none'; // Hide fee text
             } catch (error) { 
+                console.error("Submit withdrawal error:", error);
                 tg.showAlert(error.message || 'Withdrawal failed. Please try again.'); 
             } finally { 
                 document.getElementById('loading').style.display = 'none'; 
@@ -894,9 +924,10 @@
                             const errorData = await response.json(); 
                             throw new Error(errorData.detail || 'Purchase failed.'); 
                         } 
-                        tg.showAlert("Success! You received 1 Gift Ticket."); // Changed from 2 to 1
+                        tg.showAlert("Success! You received 1 Gift Ticket."); 
                         fetchInitialData(); 
                     } catch(e) { 
+                        console.error("Buy ticket error:", e);
                         tg.showAlert(e.message); 
                     } finally { 
                         document.getElementById('loading').style.display = 'none'; 
@@ -908,7 +939,7 @@
         // Send Gift Money
         document.getElementById('giftForm').addEventListener('submit', async function(e) { 
             e.preventDefault(); 
-            const recipient_id = document.getElementById('giftRecipientId').value; 
+            const recipient_id = document.getElementById('giftRecipientId').value.trim(); 
             const amount = parseFloat(document.getElementById('giftAmount').value); 
             
             const giftMinAmount = appData.gift_min_amount || 30.00; // Use 30.00 as default
@@ -933,7 +964,7 @@
                 const response = await fetch(`${API_BASE_URL}/gift_money`, { 
                     method: 'POST', 
                     headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({ user_id: user.id, _auth: initData, recipient_id, amount }) 
+                    body: JSON.stringify({ user_id: user.id, _auth: initData, recipient_id: parseInt(recipient_id), amount }) 
                 }); 
                 if (!response.ok) { 
                     const errorData = await response.json(); 
@@ -943,6 +974,7 @@
                 fetchInitialData(); 
                 document.getElementById('giftForm').reset(); 
             } catch(e) { 
+                console.error("Send gift error:", e);
                 tg.showAlert(e.message); 
             } finally { 
                 document.getElementById('loading').style.display = 'none'; 
