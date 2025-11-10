@@ -335,6 +335,10 @@
             top: 10px;
             right: 10px;
             cursor: pointer;
+            filter: drop-shadow(0 0 1px var(--tg-hint));
+        }
+        .modal-content .close-button:hover {
+             filter: drop-shadow(0 0 3px var(--accent-red));
         }
         
         /* Form Group Styling */
@@ -1047,8 +1051,168 @@
                 document.getElementById('loading').style.display = 'none';
             }
         }
-
+        
         // --- UI Rendering Functions (Defined before they are called) ---
+        function renderNotifications(notifications) {
+            const notificationList = document.getElementById('notificationList');
+            notificationList.innerHTML = ''; 
+
+            if (!notifications || notifications.length === 0) {
+                notificationList.innerHTML = '<li class="pixel-container"><p>No new notifications.</p></li>';
+                return;
+            }
+
+            notifications.forEach(notif => {
+                const li = document.createElement('li');
+                let statusClass = `status-${notif.status}`;
+                if (notif.type === 'referral_join' || notif.type === 'gift_received' || notif.type.startsWith('game_')) {
+                    statusClass = 'status-info'; 
+                }
+                li.className = `list-item notification-item ${statusClass} ${notif.is_read ? '' : 'unread'}`;
+                
+                let detailsHtml = '';
+                let title = '';
+
+                if (notif.type === 'task_submission') {
+                    title = `Task: ${notif.description}`;
+                    detailsHtml = `
+                        <p>Reward: P${notif.reward.toFixed(2)}</p>
+                    `;
+                } else if (notif.type === 'withdrawal') {
+                    title = `Withdrawal: P${notif.amount.toFixed(2)}`;
+                    detailsHtml = `
+                        <p>Method: ${notif.method}</p>
+                    `;
+                } else if (notif.type === 'referral_join') {
+                    title = `New Friend Joined!`;
+                    detailsHtml = `
+                        <p>${notif.message}</p> 
+                    `;
+                } else if (notif.type === 'gift_received') {
+                    title = `Gift Received!`;
+                    detailsHtml = `
+                        <p>${notif.message}</p>
+                    `;
+                } else if (notif.type === 'game_won' || notif.type === 'game_lost') {
+                    title = notif.type === 'game_won' ? 'Game Won!' : 'Game Lost!';
+                    detailsHtml = `<p>${notif.message}</p>`;
+                }
+
+
+                if (notif.status === 'rejected' && notif.reason) {
+                    detailsHtml += `<p class="reason">Reason: ${notif.reason}</p>`;
+                }
+                
+                li.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h3>${title}</h3>
+                            ${detailsHtml}
+                            <div class="date">${new Date(notif.date).toLocaleDateString()}</div>
+                        </div>
+                        <span class="status ${statusClass}" style="flex-shrink: 0; margin-left: 10px;">${notif.status.toUpperCase()}</span>
+                    </div>
+                `;
+                notificationList.appendChild(li);
+            });
+        }
+
+        const MOVE_EMOJIS = {
+            'rock': '✊',
+            'paper': '✋',
+            'scissors': '✌️',
+            'none': '' 
+        };
+
+        function updateGameUI(gameData) {
+            const statusElement = document.getElementById('activeGameStatus');
+            const gamePlayArea = document.getElementById('gamePlayArea');
+            const player1Display = document.getElementById('player1Display');
+            const player2Display = document.getElementById('player2Display');
+            const player1NameElement = document.getElementById('player1Name');
+            const player2NameElement = document.getElementById('player2Name');
+            const player1ScoreElement = document.getElementById('player1Score');
+            const player2ScoreElement = document.getElementById('player2Score');
+            const player1MoveElement = document.getElementById('player1Move');
+            const player2MoveElement = document.getElementById('player2Move');
+            const gameResultMessageElement = document.getElementById('gameResultMessage');
+            const yourTurnStatus = document.getElementById('yourTurnStatus');
+            const moveButtons = document.querySelectorAll('#gamePlayArea .move-buttons button');
+
+            const isCreator = (gameData.creator_id === user.id);
+            
+            player1NameElement.innerText = user.first_name || 'You';
+            player2NameElement.innerText = gameData.opponent_name || 'Opponent';
+
+            player1ScoreElement.innerText = isCreator ? gameData.creator_score : gameData.opponent_score;
+            player2ScoreElement.innerText = isCreator ? gameData.opponent_score : gameData.creator_score;
+
+            const currentPlayerLastMove = isCreator ? gameData.creator_last_move : gameData.opponent_last_move;
+            const opponentPlayerLastMove = isCreator ? gameData.opponent_last_move : gameData.creator_last_move;
+            
+            player1MoveElement.innerText = MOVE_EMOJIS[currentPlayerLastMove] || '';
+            player2MoveElement.innerText = MOVE_EMOJIS[opponentPlayerLastMove] || '';
+
+
+            if (gameData.status === 'waiting_for_opponent') {
+                statusElement.innerText = `Room: ${gameData.room_name} - Waiting for opponent... (Bet: P${gameData.bet_amount.toFixed(2)})`;
+                gamePlayArea.style.display = 'none';
+                yourTurnStatus.innerText = "Waiting for an opponent to join...";
+                moveButtons.forEach(btn => btn.disabled = true);
+                player1Display.classList.remove('active-player');
+                player2Display.classList.remove('active-player');
+            } else if (gameData.status === 'in_progress') {
+                statusElement.innerText = `Room: ${gameData.room_name} - Game in progress! (Bet: P${gameData.bet_amount.toFixed(2)})`;
+                gamePlayArea.style.display = 'block';
+
+                const playerMoved = gameData.player_move_made;
+                const opponentMoved = gameData.opponent_move_made;
+                
+                if (!playerMoved) { 
+                    yourTurnStatus.innerText = "Make your move!";
+                    moveButtons.forEach(btn => btn.disabled = false);
+                    player1Display.classList.add('active-player');
+                    player2Display.classList.remove('active-player');
+                } else if (playerMoved && !opponentMoved) { 
+                    yourTurnStatus.innerText = "Waiting for opponent's move...";
+                    moveButtons.forEach(btn => btn.disabled = true);
+                    player1Display.classList.remove('active-player');
+                    player2Display.classList.add('active-player');
+                } else { 
+                    yourTurnStatus.innerText = gameData.last_round_result || "Waiting for next round...";
+                    moveButtons.forEach(btn => btn.disabled = true); 
+                    player1Display.classList.remove('active-player');
+                    player2Display.classList.remove('active-player');
+                    player1MoveElement.innerText = ''; 
+                    player2MoveElement.innerText = ''; 
+                }
+
+                gameResultMessageElement.innerText = gameData.last_round_result || "";
+
+            } else if (gameData.status === 'finished' || gameData.status === 'cancelled') {
+                statusElement.innerText = `Game Over!`;
+                gamePlayArea.style.display = 'block'; 
+                
+                player1MoveElement.innerText = MOVE_EMOJIS[currentPlayerLastMove] || '';
+                player2MoveElement.innerText = MOVE_EMOJIS[opponentPlayerLastMove] || '';
+                
+                player1ScoreElement.innerText = isCreator ? gameData.creator_score : gameData.opponent_score;
+                player2ScoreElement.innerText = isCreator ? gameData.opponent_score : gameData.creator_score;
+                gameResultMessageElement.innerText = gameData.final_result_message;
+                yourTurnStatus.innerText = ""; 
+                moveButtons.forEach(btn => btn.disabled = true); 
+                player1Display.classList.remove('active-player');
+                player2Display.classList.remove('active-player');
+
+                activeGameRoomId = null; 
+                stopGamePolling();
+                document.getElementById('myActiveGameSection').style.display = 'none';
+                fetchAvailableRooms();
+                fetchInitialDataAndRender(); // Refresh to update balance
+            }
+        }
+
+        // --- Main Rendering Function ---
         function renderAll(){
             // --- Home View ---
             document.getElementById('balanceAmount').innerText = `P${(appData.balance || 0).toFixed(2)}`;
@@ -1146,94 +1310,16 @@
             document.getElementById('buyTicketBtn').innerText = `Buy Tickets (P${(appData.gift_ticket_price || 10.00).toFixed(2)})`;
             document.querySelector('#giftView .pixel-container p').innerHTML = `Uses 1 Ticket. A ${((appData.gift_fee_percent || 0.05)*100).toFixed(0)}% fee applies to the sent amount from your balance. Min: P${(appData.gift_min_amount || 30.00).toFixed(2)}`;
 
-            // Initial fetch for notifications when app data is loaded
-            fetchNotifications();
-
-            // Handle active game state display after initial data loads
-            if (appData.active_game_room_id) {
-                activeGameRoomId = appData.active_game_room_id;
-                document.getElementById('myActiveGameSection').style.display = 'block';
-                document.getElementById('activeGameRoomName').innerText = appData.active_game_room_name || `Room ${activeGameRoomId}`;
-                document.getElementById('activeGameStatus').innerText = `Room: ${appData.active_game_room_name || activeGameRoomId} - Game in progress!`; // Initial status text
-                document.getElementById('gamePlayArea').style.display = 'block';
-                startGamePolling(activeGameRoomId);
-            } else {
-                activeGameRoomId = null;
-                document.getElementById('myActiveGameSection').style.display = 'none';
-                document.getElementById('gamePlayArea').style.display = 'none';
-                stopGamePolling();
-            }
-        }
-
-        function renderNotifications(notifications) {
-            const notificationList = document.getElementById('notificationList');
-            notificationList.innerHTML = ''; 
-
-            if (!notifications || notifications.length === 0) {
-                notificationList.innerHTML = '<li class="pixel-container"><p>No new notifications.</p></li>';
-                return;
-            }
-
-            notifications.forEach(notif => {
-                const li = document.createElement('li');
-                let statusClass = `status-${notif.status}`;
-                if (notif.type === 'referral_join' || notif.type === 'gift_received' || notif.type.startsWith('game_')) {
-                    statusClass = 'status-info'; // Use info style for these types
-                }
-                li.className = `list-item notification-item ${statusClass} ${notif.is_read ? '' : 'unread'}`;
-                
-                let detailsHtml = '';
-                let title = '';
-
-                if (notif.type === 'task_submission') {
-                    title = `Task: ${notif.description}`;
-                    detailsHtml = `
-                        <p>Reward: P${notif.reward.toFixed(2)}</p>
-                    `;
-                } else if (notif.type === 'withdrawal') {
-                    title = `Withdrawal: P${notif.amount.toFixed(2)}`;
-                    detailsHtml = `
-                        <p>Method: ${notif.method}</p>
-                    `;
-                } else if (notif.type === 'referral_join') {
-                    title = `New Friend Joined!`;
-                    detailsHtml = `
-                        <p>${notif.message}</p> <!-- Message from backend now has full text -->
-                    `;
-                } else if (notif.type === 'gift_received') {
-                    title = `Gift Received!`;
-                    detailsHtml = `
-                        <p>${notif.message}</p>
-                    `;
-                } else if (notif.type === 'game_won' || notif.type === 'game_lost') {
-                    title = notif.type === 'game_won' ? 'Game Won!' : 'Game Lost!';
-                    detailsHtml = `<p>${notif.message}</p>`;
-                }
-
-
-                if (notif.status === 'rejected' && notif.reason) {
-                    detailsHtml += `<p class="reason">Reason: ${notif.reason}</p>`;
-                }
-                
-                li.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div>
-                            <h3>${title}</h3>
-                            ${detailsHtml}
-                            <div class="date">${new Date(notif.date).toLocaleDateString()}</div>
-                        </div>
-                        <span class="status ${statusClass}" style="flex-shrink: 0; margin-left: 10px;">${notif.status.toUpperCase()}</span>
-                    </div>
-                `;
-                notificationList.appendChild(li);
-            });
+            // --- Games View initial state ---
+            // This will be specifically handled by showView('gamesView')
+            // No need to re-render here as fetchInitialDataAndRender calls it on load and other views manage it
         }
         
-        // --- Primary Data Fetching Functions ---
+        // --- Primary Data Fetching and Rendering Trigger ---
         async function fetchInitialDataAndRender() {
             try {
                 appData = await callApi('/get_initial_data', 'POST', {});
-                activeGameRoomId = appData.active_game_room_id; // Update active game status
+                activeGameRoomId = appData.active_game_room_id; 
                 renderAll(); 
             } catch (error) { 
                 tg.showAlert(error.message || 'COULD NOT LOAD DATA. PLEASE RESTART.'); 
@@ -1263,7 +1349,7 @@
             if (viewId === 'notificationsView') {
                 fetchNotifications();
             } else if (viewId === 'homeView' || viewId === 'profileView') {
-                fetchInitialDataAndRender(); // Re-fetch to ensure fresh data
+                fetchInitialDataAndRender(); 
             } else if (viewId === 'gamesView') {
                 fetchAvailableRooms();
                 if (activeGameRoomId) {
@@ -1281,270 +1367,8 @@
         }
 
 
-        // --- Game Logic Functions ---
-        async function createGameRoom() {
-            const betAmount = parseFloat(document.getElementById('gameBetAmount').value);
-            const roomName = document.getElementById('gameRoomName').value.trim();
-
-            if (isNaN(betAmount) || betAmount <= 0) {
-                tg.showAlert('Please enter a valid bet amount.');
-                return;
-            }
-            if (betAmount > appData.balance) {
-                tg.showAlert('Insufficient balance to create this room.');
-                return;
-            }
-
-            try {
-                const result = await callApi('/games/create_room', 'POST', { bet_amount: betAmount, room_name: roomName });
-                tg.showAlert(`Game room "${result.room_name}" created! Waiting for opponent.`);
-                activeGameRoomId = result.room_id;
-                document.getElementById('createGameRoomForm').reset();
-                document.getElementById('myActiveGameSection').style.display = 'block';
-                document.getElementById('activeGameRoomName').innerText = result.room_name;
-                document.getElementById('activeGameStatus').innerText = `Room: ${result.room_name} - Waiting for opponent... (Bet: P${result.bet_amount.toFixed(2)})`;
-                document.getElementById('gamePlayArea').style.display = 'none'; 
-                startGamePolling(activeGameRoomId);
-                fetchInitialDataAndRender(); 
-                fetchAvailableRooms(); 
-            } catch (error) {
-                console.error("Create room error:", error);
-            }
-        }
-
-        async function fetchAvailableRooms() {
-            try {
-                const rooms = await callApi('/games/list_rooms', 'POST', {});
-                renderAvailableRooms(rooms);
-            } catch (error) {
-                console.error("Fetch available rooms error:", error);
-            }
-        }
-
-        function renderAvailableRooms(rooms) {
-            const availableRoomsList = document.getElementById('availableRoomsList');
-            availableRoomsList.innerHTML = '';
-
-            const roomsToShow = rooms.filter(room => room.creator_id !== user.id);
-
-            if (!roomsToShow || roomsToShow.length === 0) {
-                availableRoomsList.innerHTML = '<li class="pixel-container"><p>No rooms available. Create one!</p></li>';
-                return;
-            }
-
-            roomsToShow.forEach(room => {
-                const li = document.createElement('li');
-                li.className = 'list-item game-room-item';
-                li.innerHTML = `
-                    <div class="game-info">
-                        <h3>${room.room_name || `Room ID: ${room.room_id}`}</h3>
-                        <p>Bet: P${room.bet_amount.toFixed(2)}</p>
-                        <p>Creator: ${room.creator_name}</p>
-                    </div>
-                    <button type="button" class="button join-button" data-room-id="${room.room_id}" style="background: var(--accent-yellow); color: var(--pixel-border-dark);">Join</button>
-                `;
-                availableRoomsList.appendChild(li);
-            });
-
-            availableRoomsList.querySelectorAll('.join-button').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const roomId = e.target.dataset.roomId;
-                    joinGameRoom(roomId);
-                });
-            });
-        }
-
-        async function joinGameRoom(roomId) {
-            try {
-                const result = await callApi('/games/join_room', 'POST', { room_id: roomId });
-                tg.showAlert(`Joined room "${result.room_name}"!`);
-                activeGameRoomId = result.room_id;
-                document.getElementById('myActiveGameSection').style.display = 'block';
-                document.getElementById('activeGameRoomName').innerText = result.room_name;
-                document.getElementById('activeGameStatus').innerText = `Room: ${result.room_name} - Game Started! (Bet: P${result.bet_amount.toFixed(2)})`;
-                document.getElementById('gamePlayArea').style.display = 'block'; 
-                startGamePolling(activeGameRoomId);
-                fetchInitialDataAndRender(); 
-                fetchAvailableRooms(); 
-            } catch (error) {
-                console.error("Join room error:", error);
-            }
-        }
-
-        async function makeGameMove(move) {
-            if (!activeGameRoomId) {
-                tg.showAlert('You are not in an active game.');
-                return;
-            }
-            // Disable buttons temporarily to prevent double click
-            document.querySelectorAll('#gamePlayArea .move-buttons button').forEach(btn => btn.disabled = true);
-            
-            try {
-                const result = await callApi('/games/make_move', 'POST', { room_id: activeGameRoomId, move: move });
-                tg.HapticFeedback.impactOccurred('medium');
-                showToast(`You chose ${move.toUpperCase()}!`);
-                updateGameUI(result); 
-            } catch (error) {
-                // Error handled by callApi, re-enable buttons on error or on next poll
-                document.querySelectorAll('#gamePlayArea .move-buttons button').forEach(btn => btn.disabled = false); 
-                console.error("Make move error:", error);
-            }
-        }
-
-        async function leaveGame() {
-            if (!activeGameRoomId) {
-                tg.showAlert('You are not in an active game.');
-                return;
-            }
-            tg.showConfirm('Are you sure you want to leave this game? Your bet will be refunded, and the game will be cancelled for both players.', async (ok) => {
-                if (ok) {
-                    try {
-                        await callApi('/games/leave_room', 'POST', { room_id: activeGameRoomId });
-                        tg.showAlert('You have left the game.');
-                        activeGameRoomId = null;
-                        document.getElementById('myActiveGameSection').style.display = 'none';
-                        document.getElementById('gamePlayArea').style.display = 'none';
-                        stopGamePolling();
-                        fetchAvailableRooms(); 
-                        fetchInitialDataAndRender(); 
-                    } catch (error) {
-                        console.error("Leave game error:", error);
-                    }
-                }
-            });
-        }
-
-        async function fetchGameStatus() {
-            if (!activeGameRoomId) {
-                stopGamePolling();
-                return;
-            }
-            try {
-                const gameData = await callApi('/games/get_game_state', 'POST', { room_id: activeGameRoomId });
-                updateGameUI(gameData);
-            } catch (error) {
-                if (error.message && (error.message.includes("Game ended") || error.message.includes("not found") || error.message.includes("cancelled"))) {
-                    activeGameRoomId = null;
-                    stopGamePolling();
-                    document.getElementById('myActiveGameSection').style.display = 'none';
-                    document.getElementById('gamePlayArea').style.display = 'none';
-                    fetchAvailableRooms();
-                    fetchInitialDataAndRender();
-                    tg.showAlert(error.message); 
-                }
-                console.error("Fetch game status error:", error);
-            }
-        }
-
-        const MOVE_EMOJIS = {
-            'rock': '✊',
-            'paper': '✋',
-            'scissors': '✌️',
-            'none': '' 
-        };
-
-        function updateGameUI(gameData) {
-            const statusElement = document.getElementById('activeGameStatus');
-            const gamePlayArea = document.getElementById('gamePlayArea');
-            const player1Display = document.getElementById('player1Display');
-            const player2Display = document.getElementById('player2Display');
-            const player1NameElement = document.getElementById('player1Name');
-            const player2NameElement = document.getElementById('player2Name');
-            const player1ScoreElement = document.getElementById('player1Score');
-            const player2ScoreElement = document.getElementById('player2Score');
-            const player1MoveElement = document.getElementById('player1Move');
-            const player2MoveElement = document.getElementById('player2Move');
-            const gameResultMessageElement = document.getElementById('gameResultMessage');
-            const yourTurnStatus = document.getElementById('yourTurnStatus');
-            const moveButtons = document.querySelectorAll('#gamePlayArea .move-buttons button');
-
-            const isCreator = (gameData.creator_id === user.id);
-            
-            player1NameElement.innerText = user.first_name || 'You';
-            player2NameElement.innerText = gameData.opponent_name || 'Opponent';
-
-            player1ScoreElement.innerText = isCreator ? gameData.creator_score : gameData.opponent_score;
-            player2ScoreElement.innerText = isCreator ? gameData.opponent_score : gameData.creator_score;
-
-            const currentPlayerLastMove = isCreator ? gameData.creator_last_move : gameData.opponent_last_move;
-            const opponentPlayerLastMove = isCreator ? gameData.opponent_last_move : gameData.creator_last_move;
-            
-            player1MoveElement.innerText = MOVE_EMOJIS[currentPlayerLastMove] || '';
-            player2MoveElement.innerText = MOVE_EMOJIS[opponentPlayerLastMove] || '';
-
-
-            if (gameData.status === 'waiting_for_opponent') {
-                statusElement.innerText = `Room: ${gameData.room_name} - Waiting for opponent... (Bet: P${gameData.bet_amount.toFixed(2)})`;
-                gamePlayArea.style.display = 'none';
-                yourTurnStatus.innerText = "Waiting for an opponent to join...";
-                moveButtons.forEach(btn => btn.disabled = true);
-                player1Display.classList.remove('active-player');
-                player2Display.classList.remove('active-player');
-            } else if (gameData.status === 'in_progress') {
-                statusElement.innerText = `Room: ${gameData.room_name} - Game in progress! (Bet: P${gameData.bet_amount.toFixed(2)})`;
-                gamePlayArea.style.display = 'block';
-
-                const playerMoved = gameData.player_move_made;
-                const opponentMoved = gameData.opponent_move_made;
-                
-                if (!playerMoved) { 
-                    yourTurnStatus.innerText = "Make your move!";
-                    moveButtons.forEach(btn => btn.disabled = false);
-                    player1Display.classList.add('active-player');
-                    player2Display.classList.remove('active-player');
-                } else if (playerMoved && !opponentMoved) { 
-                    yourTurnStatus.innerText = "Waiting for opponent's move...";
-                    moveButtons.forEach(btn => btn.disabled = true);
-                    player1Display.classList.remove('active-player');
-                    player2Display.classList.add('active-player');
-                } else { 
-                    yourTurnStatus.innerText = gameData.last_round_result || "Waiting for next round...";
-                    moveButtons.forEach(btn => btn.disabled = true); 
-                    player1Display.classList.remove('active-player');
-                    player2Display.classList.remove('active-player');
-                    player1MoveElement.innerText = ''; // Reset for next round
-                    player2MoveElement.innerText = ''; // Reset for next round
-                }
-
-                gameResultMessageElement.innerText = gameData.last_round_result || "";
-
-            } else if (gameData.status === 'finished' || gameData.status === 'cancelled') {
-                statusElement.innerText = `Game Over!`;
-                gamePlayArea.style.display = 'block'; 
-                
-                player1MoveElement.innerText = MOVE_EMOJIS[currentPlayerLastMove] || '';
-                player2MoveElement.innerText = MOVE_EMOJIS[opponentPlayerLastMove] || '';
-                
-                player1ScoreElement.innerText = isCreator ? gameData.creator_score : gameData.opponent_score;
-                player2ScoreElement.innerText = isCreator ? gameData.opponent_score : gameData.creator_score;
-                gameResultMessageElement.innerText = gameData.final_result_message;
-                yourTurnStatus.innerText = ""; 
-                moveButtons.forEach(btn => btn.disabled = true); 
-                player1Display.classList.remove('active-player');
-                player2Display.classList.remove('active-player');
-
-                activeGameRoomId = null; 
-                stopGamePolling();
-                document.getElementById('myActiveGameSection').style.display = 'none';
-                fetchAvailableRooms();
-                fetchInitialDataAndRender();
-            }
-        }
-
-        function startGamePolling(roomId) {
-            stopGamePolling(); 
-            gameUpdateInterval = setInterval(() => fetchGameStatus(roomId), 3000); 
-        }
-
-        function stopGamePolling() {
-            if (gameUpdateInterval) {
-                clearInterval(gameUpdateInterval);
-                gameUpdateInterval = null;
-            }
-        }
-
         // --- Event Listeners ---
-        window.addEventListener('load', fetchInitialDataAndRender); // Changed to call the main rendering function
+        window.addEventListener('load', fetchInitialDataAndRender); 
 
         if (user && user.first_name) {
              document.getElementById('welcome-message').innerText = `Hey, ${user.first_name}!`;
