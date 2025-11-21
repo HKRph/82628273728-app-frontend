@@ -3,161 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Xewee | System Upgrade</title>
+    <title>Xewee | Upgrade</title>
     
-    <!-- Telegram WebApp Script (ESSENTIAL) -->
+    <!-- Telegram WebApp Script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <!-- Google Fonts for a professional look -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Embedded CSS Styling -->
     <style>
-        /* --- Keyframe Animations --- */
-        @keyframes backgroundGrid { 0% { background-position: 0 0; } 100% { background-position: -100px -100px; } }
-        @keyframes borderGlow { 0% { border-color: rgba(0, 255, 135, 0.3); box-shadow: 0 0 10px rgba(0, 255, 135, 0.1); } 50% { border-color: rgba(0, 255, 135, 0.7); box-shadow: 0 0 25px rgba(0, 255, 135, 0.4); } 100% { border-color: rgba(0, 255, 135, 0.3); box-shadow: 0 0 10px rgba(0, 255, 135, 0.1); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* --- Animations --- */
+        @keyframes backgroundGrid { 
+            0% { background-position: 0 0; } 
+            100% { background-position: -12px -12px; } 
+        }
+        @keyframes borderGlow { 
+            0% { border-color: rgba(0, 255, 135, 0.3); } 
+            50% { border-color: rgba(0, 255, 135, 0.7); } 
+            100% { border-color: rgba(0, 255, 135, 0.3); } 
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
 
         /* --- Base Styles --- */
         :root {
             --bg-dark: #0a110e;
-            --container-bg: rgba(13, 27, 20, 0.5);
+            --container-bg: rgba(13, 27, 20, 0.9);
             --text-light: #e0f2e9;
             --text-muted: rgba(224, 242, 233, 0.6);
             --accent-green: #00ff87;
             --accent-yellow: #ffdd57;
         }
 
+        * {
+            image-rendering: pixelated;
+        }
+
         body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0; padding: 20px;
+            font-family: 'Courier New', monospace;
+            margin: 0; 
+            padding: 15px;
             color: var(--text-light);
             background-color: var(--bg-dark);
-            background-image: linear-gradient(rgba(20, 46, 34, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(20, 46, 34, 0.2) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: backgroundGrid 4s linear infinite;
-            display: flex; align-items: center; justify-content: center;
+            background-image: 
+                linear-gradient(rgba(20, 46, 34, 0.3) 1px, transparent 1px), 
+                linear-gradient(90deg, rgba(20, 46, 34, 0.3) 1px, transparent 1px);
+            background-size: 12px 12px;
+            animation: backgroundGrid 10s linear infinite;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
             min-height: 100vh;
-            box-sizing: border-box; text-align: center; overflow: hidden;
+            box-sizing: border-box; 
+            text-align: center; 
         }
         
         /* --- Main Container --- */
         .main-container {
-            width: 100%; max-width: 480px;
+            width: 100%; 
+            max-width: 320px;
             background: var(--container-bg);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border-radius: 24px; padding: 40px 30px; border: 2px solid;
-            animation: borderGlow 4s ease-in-out infinite, fadeInUp 0.8s ease-out;
-            opacity: 0;
+            border-radius: 8px; 
+            padding: 20px 15px; 
+            border: 2px solid;
+            animation: borderGlow 4s ease-in-out infinite, fadeIn 0.6s ease-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
-        .main-container.loaded { opacity: 1; }
 
-        /* --- Content Styling & Animations --- */
-        .animated-item { opacity: 0; animation: fadeInUp 0.6s ease-out forwards; }
-        #balanceWrapper { animation-delay: 0.2s; }
-        #statsWrapper { animation-delay: 0.4s; }
-        .upgrade-notice { animation-delay: 0.6s; }
-        #footerInfo { animation-delay: 0.8s; }
-
+        /* --- Balance Section --- */
         #balanceDisplay {
-            font-size: 2.5em; font-weight: 700;
-            margin: 0 0 5px 0; line-height: 1.2;
-            color: var(--text-light); text-shadow: 0 0 15px rgba(0, 255, 135, 0.5);
+            font-size: 1.8em; 
+            font-weight: 700;
+            margin: 0 0 3px 0; 
+            color: var(--text-light); 
+            text-shadow: 0 0 10px rgba(0, 255, 135, 0.5);
+            letter-spacing: 1px;
         }
         #balanceLabel {
-            font-size: 1em; font-weight: 400;
-            color: var(--text-muted); margin-bottom: 30px; display: block;
+            font-size: 0.8em; 
+            color: var(--text-muted); 
+            margin-bottom: 15px; 
+            display: block;
         }
 
         /* --- Stats Grid --- */
         .stats-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 15px; margin-bottom: 30px;
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px; 
+            margin-bottom: 15px;
         }
         .stat-item {
             background: rgba(0, 255, 135, 0.05);
-            padding: 15px 10px; border-radius: 12px;
+            padding: 10px 5px; 
+            border-radius: 4px;
             border: 1px solid rgba(0, 255, 135, 0.1);
         }
         .stat-value {
-            display: block; font-size: 1.25em; font-weight: 600;
-            color: var(--accent-green); line-height: 1.2;
-            margin-bottom: 4px;
+            display: block; 
+            font-size: 0.9em; 
+            font-weight: 600;
+            color: var(--accent-green); 
+            margin-bottom: 2px;
         }
         .stat-label {
-            font-size: 0.75em; color: var(--text-muted);
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        #usernameDisplay { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* --- Upgrade Notice Card --- */
-        .upgrade-notice {
-            background: rgba(0, 255, 135, 0.05); border-radius: 16px;
-            padding: 25px; border: 1px solid rgba(0, 255, 135, 0.15);
-        }
-        .upgrade-notice h2 {
-            font-size: 1.5em; font-weight: 600; margin: 0 0 15px 0;
-            color: var(--accent-yellow); text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .upgrade-notice h2 .icon { animation: pulse 2s infinite ease-in-out; }
-        .upgrade-notice p {
-            font-size: 0.95em; line-height: 1.7; margin: 10px 0 0 0;
+            font-size: 0.65em; 
             color: var(--text-muted);
         }
-        .upgrade-notice p strong { color: var(--text-light); font-weight: 600; }
+        #usernameDisplay { 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
+
+        /* --- Notice Section --- */
+        .upgrade-notice {
+            background: rgba(0, 255, 135, 0.05); 
+            border-radius: 6px;
+            padding: 15px; 
+            border: 1px solid rgba(0, 255, 135, 0.15);
+            margin-bottom: 15px;
+        }
+        .upgrade-notice h2 {
+            font-size: 1.1em; 
+            margin: 0 0 8px 0;
+            color: var(--accent-yellow); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 5px;
+        }
+        .upgrade-notice p {
+            font-size: 0.75em; 
+            line-height: 1.4; 
+            margin: 5px 0 0 0;
+            color: var(--text-muted);
+        }
+        .upgrade-notice p strong { 
+            color: var(--text-light); 
+        }
         
-        /* --- Telegram Button --- */
-        .telegram-button {
-            display: inline-flex; align-items: center; justify-content: center;
-            gap: 10px; background: transparent; color: var(--accent-green);
-            padding: 12px 25px; border-radius: 50px; text-decoration: none;
-            font-weight: 600; font-size: 1em; margin-top: 25px;
-            border: 2px solid var(--accent-green);
-            transition: all 0.3s ease; box-shadow: 0 0 15px rgba(0, 255, 135, 0.2);
+        /* --- Action Button --- */
+        .action-button {
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 6px; 
+            background: rgba(0, 255, 135, 0.1); 
+            color: var(--accent-green);
+            padding: 8px 15px; 
+            border-radius: 4px; 
+            text-decoration: none;
+            font-weight: 600; 
+            font-size: 0.8em; 
+            margin-top: 10px;
+            border: 1px solid var(--accent-green);
+            width: 90%;
+            animation: pulse 2s infinite ease-in-out;
         }
-        .telegram-button .icon { width: 24px; height: 24px; transition: transform 0.3s ease; }
-        .telegram-button:hover {
-            background: rgba(0, 255, 135, 0.1); color: var(--text-light);
-            box-shadow: 0 0 25px rgba(0, 255, 135, 0.5); transform: translateY(-3px);
+        .action-button .icon { 
+            width: 14px; 
+            height: 14px; 
         }
-        .telegram-button:hover .icon { transform: rotate(15deg); }
 
         /* --- Footer --- */
         #footerInfo {
-            margin-top: 30px; font-size: 0.8em;
-            color: var(--text-muted); opacity: 0.7;
+            margin-top: 15px; 
+            font-size: 0.7em;
+            color: var(--text-muted); 
+            opacity: 0.7;
+            padding-top: 8px;
+            border-top: 1px solid rgba(0, 255, 135, 0.1);
         }
 
         /* --- Loading Spinner --- */
         #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-dark); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 9999;
-            transition: opacity 0.5s ease; color: var(--text-light); font-size: 1.2em;
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: var(--bg-dark); 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            z-index: 9999;
+            transition: opacity 0.3s ease; 
+            color: var(--text-light); 
+            font-size: 0.9em;
         }
         #loader::after {
-            content: ''; width: 50px; height: 50px;
-            border: 5px solid rgba(0, 255, 135, 0.2); border-top-color: var(--accent-green);
-            border-radius: 50%; animation: spin 1s linear infinite; margin-top: 20px;
+            content: ''; 
+            width: 25px; 
+            height: 25px;
+            border: 2px solid rgba(0, 255, 135, 0.2); 
+            border-top-color: var(--accent-green);
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+            margin-top: 10px;
+        }
+        @keyframes spin { 
+            to { transform: rotate(360deg); } 
         }
     </style>
 </head>
 <body>
 
-    <div id="loader">Initializing Secure Connection...</div>
+    <div id="loader">Loading...</div>
 
     <div class="main-container">
-        <div id="balanceWrapper" class="animated-item">
+        <div id="balanceWrapper">
             <p id="balanceDisplay">P--.--</p>
             <span id="balanceLabel">Current Balance</span>
         </div>
 
-        <div class="stats-grid animated-item" id="statsWrapper">
+        <div class="stats-grid" id="statsWrapper">
             <div class="stat-item">
                 <span class="stat-value" id="usernameDisplay">--</span>
                 <span class="stat-label">Username</span>
@@ -172,25 +230,21 @@
             </div>
         </div>
 
-        <div class="upgrade-notice animated-item">
-            <h2><span class="icon">⚠️</span> System Maintenance</h2>
-            <p>Our platform is undergoing significant enhancements. As part of this process, all user balances will be reset.</p>
-            <p><strong>To our valued users from the Philippines server:</strong> Your dedication is recognized. A special award will be credited to active users who have completed tasks and made successful referrals.</p>
+        <div class="upgrade-notice">
+            <h2><span>⚠️</span> IMPORTANT</h2>
+            <p>Screenshot and send to <strong>@XeweeSupport</strong> for rewards.</p>
+            <p><strong>Deadline: Nov 22, 2025, 12:00</strong></p>
             
-            <a href="https://t.me/XeweeNews" target="_blank" class="telegram-button">
-                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-1.02.2-1.3l15.97-5.85c.73-.27 1.36.17 1.15.94l-3.3 14.9c-.2 1.05-1.05 1.3-1.88.82l-5.1-3.55-2.5 2.4c-.25.24-.48.47-.8.47z"/></svg>
-                <span>Follow for Updates</span>
+            <a href="https://t.me/XeweeSupport" target="_blank" class="action-button">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-1.02.2-1.3l15.97-5.85c.73-.27 1.36.17 1.15.94l-3.3 14.9c-.2 1.05-1.05 1.3-1.88.82l-5.1-3.55-2.5 2.4c-.25.24-.48.47-.8.47z"/></svg>
+                <span>Send Screenshot</span>
             </a>
         </div>
 
-        <p id="footerInfo" class="footer-info animated-item"></p>
+        <p id="footerInfo" class="footer-info"></p>
     </div>
     
     <script>
-        // --- Configuration ---
-        const rawApiBaseUrl = "https://web-production-078c8.up.railway.app"; 
-        const API_BASE_URL = rawApiBaseUrl.endsWith('/') ? rawApiBaseUrl.slice(0, -1) : rawApiBaseUrl;
-        
         document.addEventListener('DOMContentLoaded', () => {
             const tg = window.Telegram.WebApp;
             tg.ready();
@@ -200,19 +254,16 @@
             const initData = tg.initData;
 
             const loader = document.getElementById('loader');
-            const mainContainer = document.querySelector('.main-container');
-            
-            // --- Element Selectors ---
             const balanceDisplay = document.getElementById('balanceDisplay');
             const usernameDisplay = document.getElementById('usernameDisplay');
             const referralCountDisplay = document.getElementById('referralCount');
             const tasksCompletedDisplay = document.getElementById('tasksCompleted');
             const footerInfo = document.getElementById('footerInfo');
 
-            // --- Generic Animate Counter ---
-            function animateCountUp(element, endValue, options = {}) {
-                const { prefix = '', duration = 1500 } = options;
+            // Animate numbers
+            function animateCountUp(element, endValue, prefix = '') {
                 let startValue = 0;
+                const duration = 1000;
                 const startTime = performance.now();
 
                 function step(currentTime) {
@@ -229,10 +280,10 @@
                 requestAnimationFrame(step);
             }
 
-             // --- Animate Balance (with decimals) ---
-             function animateBalance(element, endValue) {
+            // Animate balance
+            function animateBalance(element, endValue) {
                 let startValue = 0;
-                const duration = 1500;
+                const duration = 1000;
                 const startTime = performance.now();
 
                 function step(currentTime) {
@@ -249,50 +300,46 @@
                 requestAnimationFrame(step);
             }
 
-            // --- API Call ---
+            // Fetch user data
             async function fetchUserData() {
                 try {
-                    const url = `${API_BASE_URL}/get_initial_data`;
+                    const url = "https://web-production-078c8.up.railway.app/get_initial_data";
                     const response = await fetch(url, { 
                         method: 'POST', 
                         headers: {'Content-Type': 'application/json'}, 
                         body: JSON.stringify({ user_id: user.id, _auth: initData }) 
                     });
-                    if (!response.ok) throw new Error((await response.json()).detail || 'Network error');
+                    
+                    if (!response.ok) throw new Error('Network error');
                     const data = await response.json();
-                    if (data.error) throw new Error(data.detail || 'API error');
+                    
+                    if (data.error) throw new Error('API error');
                     renderData(data);
                 } catch (error) {
                     console.error("Fetch error:", error);
                     renderData({ balance: 0, referral_count: 0, tasks_completed: 0, error: true });
-                    tg.showAlert(`Connection failed: ${error.message}`);
                 } finally {
                     loader.style.opacity = '0';
-                    mainContainer.classList.add('loaded');
-                    setTimeout(() => loader.style.display = 'none', 500);
+                    setTimeout(() => loader.style.display = 'none', 300);
                 }
             }
 
-            // --- UI Rendering ---
+            // Render data
             function renderData(data) {
-                // Render Username
                 usernameDisplay.innerText = user.username ? `@${user.username}` : (user.first_name || 'Player');
 
-                // Render Stats
                 if (data.error) {
-                     balanceDisplay.innerText = 'Error';
-                     document.getElementById('balanceLabel').innerText = 'Could not load balance';
-                     referralCountDisplay.innerText = '0';
-                     tasksCompletedDisplay.innerText = '0';
+                    balanceDisplay.innerText = 'Error';
+                    referralCountDisplay.innerText = '0';
+                    tasksCompletedDisplay.innerText = '0';
                 } else {
                     animateBalance(balanceDisplay, data.balance || 0);
                     animateCountUp(referralCountDisplay, data.referral_count || 0);
                     animateCountUp(tasksCompletedDisplay, data.tasks_completed || 0);
                 }
 
-                // Render Footer
                 if (user && user.first_name) {
-                    footerInfo.innerText = `Session verified for: ${user.first_name}`;
+                    footerInfo.innerText = `User: ${user.first_name}`;
                 }
             }
             
