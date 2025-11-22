@@ -1,350 +1,185 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Xewee | Upgrade</title>
-    
-    <!-- Telegram WebApp Script -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - 页面未找到</title>
     <style>
-        /* --- Animations --- */
-        @keyframes backgroundGrid { 
-            0% { background-position: 0 0; } 
-            100% { background-position: -12px -12px; } 
-        }
-        @keyframes borderGlow { 
-            0% { border-color: rgba(0, 255, 135, 0.3); } 
-            50% { border-color: rgba(0, 255, 135, 0.7); } 
-            100% { border-color: rgba(0, 255, 135, 0.3); } 
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
-
-        /* --- Base Styles --- */
-        :root {
-            --bg-dark: #0a110e;
-            --container-bg: rgba(13, 27, 20, 0.9);
-            --text-light: #e0f2e9;
-            --text-muted: rgba(224, 242, 233, 0.6);
-            --accent-green: #00ff87;
-            --accent-yellow: #ffdd57;
-        }
-
         * {
-            image-rendering: pixelated;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
         }
 
         body {
-            font-family: 'Courier New', monospace;
-            margin: 0; 
-            padding: 15px;
-            color: var(--text-light);
-            background-color: var(--bg-dark);
-            background-image: 
-                linear-gradient(rgba(20, 46, 34, 0.3) 1px, transparent 1px), 
-                linear-gradient(90deg, rgba(20, 46, 34, 0.3) 1px, transparent 1px);
-            background-size: 12px 12px;
-            animation: backgroundGrid 10s linear infinite;
-            display: flex; 
-            align-items: center; 
+            background-color: #36393f;
+            color: #dcddde;
+            display: flex;
             justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            box-sizing: border-box; 
-            text-align: center; 
-        }
-        
-        /* --- Main Container --- */
-        .main-container {
-            width: 100%; 
-            max-width: 320px;
-            background: var(--container-bg);
-            border-radius: 8px; 
-            padding: 20px 15px; 
-            border: 2px solid;
-            animation: borderGlow 4s ease-in-out infinite, fadeIn 0.6s ease-out;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 20px;
         }
 
-        /* --- Balance Section --- */
-        #balanceDisplay {
-            font-size: 1.8em; 
+        .container {
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            padding: 40px 30px;
+            background-color: #2f3136;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .error-code {
+            font-size: 120px;
+            font-weight: 800;
+            color: #7289da;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+
+        .error-title {
+            font-size: 28px;
             font-weight: 700;
-            margin: 0 0 3px 0; 
-            color: var(--text-light); 
-            text-shadow: 0 0 10px rgba(0, 255, 135, 0.5);
-            letter-spacing: 1px;
-        }
-        #balanceLabel {
-            font-size: 0.8em; 
-            color: var(--text-muted); 
-            margin-bottom: 15px; 
-            display: block;
+            margin-bottom: 20px;
+            color: #ffffff;
         }
 
-        /* --- Stats Grid --- */
-        .stats-grid {
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px; 
-            margin-bottom: 15px;
+        .error-description {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            color: #b9bbbe;
         }
-        .stat-item {
-            background: rgba(0, 255, 135, 0.05);
-            padding: 10px 5px; 
+
+        .discord-button {
+            display: inline-block;
+            background-color: #7289da;
+            color: white;
+            padding: 12px 24px;
             border-radius: 4px;
-            border: 1px solid rgba(0, 255, 135, 0.1);
-        }
-        .stat-value {
-            display: block; 
-            font-size: 0.9em; 
-            font-weight: 600;
-            color: var(--accent-green); 
-            margin-bottom: 2px;
-        }
-        .stat-label {
-            font-size: 0.65em; 
-            color: var(--text-muted);
-        }
-        #usernameDisplay { 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-        }
-
-        /* --- Notice Section --- */
-        .upgrade-notice {
-            background: rgba(0, 255, 135, 0.05); 
-            border-radius: 6px;
-            padding: 15px; 
-            border: 1px solid rgba(0, 255, 135, 0.15);
-            margin-bottom: 15px;
-        }
-        .upgrade-notice h2 {
-            font-size: 1.1em; 
-            margin: 0 0 8px 0;
-            color: var(--accent-yellow); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 5px;
-        }
-        .upgrade-notice p {
-            font-size: 0.75em; 
-            line-height: 1.4; 
-            margin: 5px 0 0 0;
-            color: var(--text-muted);
-        }
-        .upgrade-notice p strong { 
-            color: var(--text-light); 
-        }
-        
-        /* --- Action Button --- */
-        .action-button {
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center;
-            gap: 6px; 
-            background: rgba(0, 255, 135, 0.1); 
-            color: var(--accent-green);
-            padding: 8px 15px; 
-            border-radius: 4px; 
             text-decoration: none;
-            font-weight: 600; 
-            font-size: 0.8em; 
-            margin-top: 10px;
-            border: 1px solid var(--accent-green);
-            width: 90%;
-            animation: pulse 2s infinite ease-in-out;
-        }
-        .action-button .icon { 
-            width: 14px; 
-            height: 14px; 
+            font-weight: 600;
+            transition: background-color 0.2s;
+            margin: 0 10px;
         }
 
-        /* --- Footer --- */
-        #footerInfo {
-            margin-top: 15px; 
-            font-size: 0.7em;
-            color: var(--text-muted); 
-            opacity: 0.7;
-            padding-top: 8px;
-            border-top: 1px solid rgba(0, 255, 135, 0.1);
+        .discord-button:hover {
+            background-color: #677bc4;
         }
 
-        /* --- Loading Spinner --- */
-        #loader {
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-            background: var(--bg-dark); 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            justify-content: center; 
-            z-index: 9999;
-            transition: opacity 0.3s ease; 
-            color: var(--text-light); 
-            font-size: 0.9em;
+        .discord-button.secondary {
+            background-color: #4f545c;
         }
-        #loader::after {
-            content: ''; 
-            width: 25px; 
-            height: 25px;
-            border: 2px solid rgba(0, 255, 135, 0.2); 
-            border-top-color: var(--accent-green);
-            border-radius: 50%; 
-            animation: spin 1s linear infinite; 
-            margin-top: 10px;
+
+        .discord-button.secondary:hover {
+            background-color: #5d6269;
         }
-        @keyframes spin { 
-            to { transform: rotate(360deg); } 
+
+        .button-group {
+            margin-top: 30px;
+        }
+
+        .search-box {
+            display: flex;
+            margin: 25px 0;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            background-color: #40444b;
+            border: none;
+            border-radius: 4px;
+            color: #dcddde;
+            font-size: 16px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            background-color: #484c52;
+        }
+
+        .search-button {
+            background-color: #7289da;
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 4px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #72767d;
+        }
+
+        @media (max-width: 480px) {
+            .error-code {
+                font-size: 80px;
+            }
+            
+            .error-title {
+                font-size: 24px;
+            }
+            
+            .button-group {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .discord-button {
+                margin: 0;
+            }
         }
     </style>
 </head>
 <body>
-
-    <div id="loader">Loading...</div>
-
-    <div class="main-container">
-        <div id="balanceWrapper">
-            <p id="balanceDisplay">P--.--</p>
-            <span id="balanceLabel">Current Balance</span>
+    <div class="container">
+        <div class="error-code">404</div>
+        <div class="error-title">页面未找到</div>
+        <div class="error-description">
+            抱歉，您要查找的页面不存在或已被移除。<br>
+            请检查URL是否正确，或返回主页。
         </div>
-
-        <div class="stats-grid" id="statsWrapper">
-            <div class="stat-item">
-                <span class="stat-value" id="usernameDisplay">--</span>
-                <span class="stat-label">Username</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-value" id="referralCount">0</span>
-                <span class="stat-label">Referrals</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-value" id="tasksCompleted">0</span>
-                <span class="stat-label">Tasks Done</span>
-            </div>
+        
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="搜索...">
+            <button class="search-button">搜索</button>
         </div>
-
-        <div class="upgrade-notice">
-            <h2><span>⚠️</span> IMPORTANT</h2>
-            <p>Screenshot and send to <strong>@XeweeSupport</strong> for rewards.</p>
-            <p><strong>Deadline: Nov 22, 2025, 12:00</strong></p>
-            
-            <a href="https://t.me/XeweeSupport" target="_blank" class="action-button">
-                <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-1.02.2-1.3l15.97-5.85c.73-.27 1.36.17 1.15.94l-3.3 14.9c-.2 1.05-1.05 1.3-1.88.82l-5.1-3.55-2.5 2.4c-.25.24-.48.47-.8.47z"/></svg>
-                <span>Send Screenshot</span>
-            </a>
+        
+        <div class="button-group">
+            <a href="#" class="discord-button">返回首页</a>
+            <a href="#" class="discord-button secondary">联系支持</a>
         </div>
-
-        <p id="footerInfo" class="footer-info"></p>
+        
+        <div class="footer">
+            © 2023 Xewee · 错误代码: 404_NOT_FOUND
+        </div>
     </div>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const tg = window.Telegram.WebApp;
-            tg.ready();
-            tg.expand();
-
-            const user = tg.initDataUnsafe.user;
-            const initData = tg.initData;
-
-            const loader = document.getElementById('loader');
-            const balanceDisplay = document.getElementById('balanceDisplay');
-            const usernameDisplay = document.getElementById('usernameDisplay');
-            const referralCountDisplay = document.getElementById('referralCount');
-            const tasksCompletedDisplay = document.getElementById('tasksCompleted');
-            const footerInfo = document.getElementById('footerInfo');
-
-            // Animate numbers
-            function animateCountUp(element, endValue, prefix = '') {
-                let startValue = 0;
-                const duration = 1000;
-                const startTime = performance.now();
-
-                function step(currentTime) {
-                    const elapsedTime = currentTime - startTime;
-                    const progress = Math.min(elapsedTime / duration, 1);
-                    const currentValue = Math.floor(progress * (endValue - startValue) + startValue);
-                    element.innerText = `${prefix}${currentValue.toLocaleString()}`;
-                    if (progress < 1) {
-                        requestAnimationFrame(step);
-                    } else {
-                        element.innerText = `${prefix}${endValue.toLocaleString()}`;
-                    }
-                }
-                requestAnimationFrame(step);
+        // Simple search functionality
+        document.querySelector('.search-button').addEventListener('click', function() {
+            const query = document.querySelector('.search-input').value;
+            if (query.trim() !== '') {
+                alert(`搜索: ${query}`);
             }
-
-            // Animate balance
-            function animateBalance(element, endValue) {
-                let startValue = 0;
-                const duration = 1000;
-                const startTime = performance.now();
-
-                function step(currentTime) {
-                    const elapsedTime = currentTime - startTime;
-                    const progress = Math.min(elapsedTime / duration, 1);
-                    const currentValue = progress * (endValue - startValue) + startValue;
-                    element.innerText = `P${currentValue.toFixed(2)}`;
-                    if (progress < 1) {
-                        requestAnimationFrame(step);
-                    } else {
-                        element.innerText = `P${endValue.toFixed(2)}`;
-                    }
-                }
-                requestAnimationFrame(step);
+        });
+        
+        // Allow Enter key to trigger search
+        document.querySelector('.search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.querySelector('.search-button').click();
             }
-
-            // Fetch user data
-            async function fetchUserData() {
-                try {
-                    const url = "https://web-production-078c8.up.railway.app/get_initial_data";
-                    const response = await fetch(url, { 
-                        method: 'POST', 
-                        headers: {'Content-Type': 'application/json'}, 
-                        body: JSON.stringify({ user_id: user.id, _auth: initData }) 
-                    });
-                    
-                    if (!response.ok) throw new Error('Network error');
-                    const data = await response.json();
-                    
-                    if (data.error) throw new Error('API error');
-                    renderData(data);
-                } catch (error) {
-                    console.error("Fetch error:", error);
-                    renderData({ balance: 0, referral_count: 0, tasks_completed: 0, error: true });
-                } finally {
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.style.display = 'none', 300);
-                }
-            }
-
-            // Render data
-            function renderData(data) {
-                usernameDisplay.innerText = user.username ? `@${user.username}` : (user.first_name || 'Player');
-
-                if (data.error) {
-                    balanceDisplay.innerText = 'Error';
-                    referralCountDisplay.innerText = '0';
-                    tasksCompletedDisplay.innerText = '0';
-                } else {
-                    animateBalance(balanceDisplay, data.balance || 0);
-                    animateCountUp(referralCountDisplay, data.referral_count || 0);
-                    animateCountUp(tasksCompletedDisplay, data.tasks_completed || 0);
-                }
-
-                if (user && user.first_name) {
-                    footerInfo.innerText = `User: ${user.first_name}`;
-                }
-            }
-            
-            fetchUserData();
         });
     </script>
 </body>
-</html>
+</html> 
